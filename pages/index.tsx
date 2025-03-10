@@ -13,11 +13,11 @@ const Itnavi: React.FC = () => {
     // tailwindとDaisyuの適用テスト→削除してOKです
     <div className="p-4">
       {/* Tailwind CSS のボックス */}
-      {/* <div className="w-full max-w-md bg-orange-500 rounded-lg p-6 mb-4 shadow-md mt-4">
+      <div className="w-full max-w-md bg-orange-500 rounded-lg p-6 mb-4 shadow-md mt-4">
         <h2 className="text-lg font-semibold text-center">
           Tailwind.css適用OK
         </h2>
-      </div> */}
+      </div>
       {/* daisyUI のカード */}
       <div className="card w-full max-w-md bg-base-200 rounded-lg shadow-md mb-4 mt-4">
         <div className="card-body p-6">
