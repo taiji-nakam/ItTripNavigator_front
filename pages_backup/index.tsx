@@ -15,7 +15,7 @@ const Itnavi: React.FC = () => {
         {/* ロゴ部分 */}
         <div className="flex items-center">
           <img src="/logo.png" alt="IT Trip Navigator ロゴ" className="h-20 w-48"/>
-        </div>
+          </div>
         {/* ナビメニュー */}
         <nav>
           <ul className="flex space-x-12 text-white items-center">
