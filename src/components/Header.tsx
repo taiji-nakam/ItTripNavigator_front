@@ -7,12 +7,12 @@ const Header: React.FC = () => {
   const [hover, setHover] = useState({ home: false, search: false, user: false });
 
   return (
-    <header className="px-29 py-5 flex justify-between items-center border-b border-white">
+    <header className="px-28 py-5 flex justify-between items-center border-b border-white">
       <div className="flex items-center">
         <img src="/logo.png" alt="IT Trip Navigator ロゴ" className="h-20 w-48" />
       </div>
       <nav>
-        <ul className="flex space-x-12 text-white items-center">
+        <ul className="flex text-white items-center">
           {/* ホーム */}
           <li
             onMouseEnter={() => setHover({ ...hover, home: true })}
@@ -32,7 +32,7 @@ const Header: React.FC = () => {
           <li
             onMouseEnter={() => setHover({ ...hover, search: true })}
             onMouseLeave={() => setHover({ ...hover, search: false })}
-            className="flex flex-col items-center hover:text-gray-500"
+            className="flex flex-col items-center hover:text-gray-500 px-10"
           >
             <Link href="/f2" className="flex flex-col items-center">
               <img
