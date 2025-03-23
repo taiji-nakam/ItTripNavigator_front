@@ -11,7 +11,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "ITripNavigator",
+  title: "IT Trip Navigator",
   description: "デジタル変革を簡単に、早く、正確に",
 };
 
@@ -22,9 +22,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ja" className={geist.className}>
-      <body className="bg-gray-200 min-h-screen">
+      <body className="bg-gray-100 min-h-screen">
         <Header />
-        <main className="max-w-md mx-auto">{children}</main>
+        <main className="w-full">{children}</main>
       </body>
     </html>
   );

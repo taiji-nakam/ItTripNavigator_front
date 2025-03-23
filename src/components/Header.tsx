@@ -1,44 +1,80 @@
-import Link from 'next/link';
+"use client"
+
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { Home, FileText, Users } from "lucide-react"
 
 export default function Header() {
+  const pathname = usePathname();
+  
   return (
-    <header className="w-full flex justify-between items-center px-4 py-2 border-b border-gray-200 bg-white-50">
-      <div className="flex items-center gap-2">
-        {/* ロゴ（左端） */}
-        <div className="logo mb-4 md:mb-0">
-          <a href="/">
-            <img
-              src="/icon/logo.png"
-              alt="Logo"
-              className="w-4 h-4"
-            />
-          </a>
+    <header style={{
+      backgroundColor: "#D1D5DB", 
+      padding: "12px 0", 
+      width: "100%"
+    }}>
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        maxWidth: "1200px",
+        margin: "0 auto",
+        padding: "0 16px"
+      }}>
+        {/* ロゴ部分 */}
+        <Link href="/" style={{ textDecoration: "none", color: "inherit", cursor: "pointer" }}>
+        <div>
+            <span style={{ fontWeight: "bold", fontSize: "25px" }}>
+                IT Trip Navigator
+                </span>
+            </div>
+        </Link>
+        
+        {/* ナビゲーション部分 */}
+        <div style={{
+          display: "flex",
+          gap: "80px",
+          alignItems: "center"
+        }}>
+          <Link 
+            href="/" 
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              color: pathname === "/" ? "#2563EB" : "#1F2937"
+            }}
+          >
+            <Home size={25} />
+            <span style={{ fontSize: "12px", marginTop: "4px" }}>ホーム</span>
+          </Link>
+          
+          <Link 
+            href="/f4" 
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              color: pathname === "/application" ? "#2563EB" : "#1F2937"
+            }}
+          >
+            <FileText size={25} />
+            <span style={{ fontSize: "12px", marginTop: "4px" }}>事例検索</span>
+          </Link>
+          
+          <Link 
+            href="/" 
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              color: pathname === "/candidates" ? "#2563EB" : "#1F2937"
+            }}
+          >
+            <Users size={25} />
+            <span style={{ fontSize: "12px", marginTop: "4px" }}>人員TOP</span>
+          </Link>
         </div>
-
-        {/* ナビゲーションリンク（右端） */}
-        <nav className="flex gap-4">
-          <a href="/">
-            <img
-              src="/icon/home.png"
-              alt="ホーム"
-              className="w-6 h-6"
-            />
-          </a>
-          <a href="/">
-            <img
-              src="/icon/case.png"
-              alt="事例検索"
-              className="w-6 h-6"
-            />
-          </a>
-          <a href="/"> {/* 未実装のリンクを一時的に / に設定 */}
-            <img
-              src="/icon/resource.png"
-              alt="人員TOP"
-              className="w-6 h-6"
-            />    
-          </a>
-        </nav>
       </div>
     </header>
   );
