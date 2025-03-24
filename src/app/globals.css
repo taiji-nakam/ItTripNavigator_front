@@ -65,6 +65,13 @@ p {
   padding-bottom: 1.25rem;
 }
 
+/* スマホサイズの調整（640px以下） */
+@media (max-width: 640px) {
+  .section-container {
+    padding: 40px 20px 20px 20px; /* 上 右 下 左 */
+  }
+}
+
 /* 共通ボタン */
 .btn {
   @apply flex items-center justify-center p-4 rounded-lg shadow font-semibold border border-gray-500 w-full bg-white text-gray-500;

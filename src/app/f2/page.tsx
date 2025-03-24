@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Dropdown from "../../components/Dropdown";
+import Link from "next/link";
 
 const Itnavi: React.FC = () => {
   const router = useRouter();
@@ -38,7 +39,11 @@ const Itnavi: React.FC = () => {
               <p className="text-sm text-gray-700">
                 製造・販売・在庫・会計などの業務システムをクラウドERPに統合し、リアルタイムのデータ活用と業務効率化を実現
               </p>
-              <p className="text-right text-xs text-gray-400 mt-4">続きを読む</p>
+              <Link href="/f4">
+                <p className="text-right text-xs text-gray-700 mt-4 cursor-pointer hover:text-gray-600 transition">
+                  続きを読む
+                </p>
+              </Link>
             </div>
             <div className="bg-white p-6 rounded-lg shadow">
               <h3 className="text-xl font-bold text-center mb-4">ゼロトラストセキュリティの導入による情報漏洩対策</h3>
@@ -46,7 +51,11 @@ const Itnavi: React.FC = () => {
               <p className="text-sm text-gray-700">
                 社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化
               </p>
-              <p className="text-right text-xs text-gray-400 mt-4">続きを読む</p>
+              <Link href="/f4">
+                <p className="text-right text-xs text-gray-700 mt-4 cursor-pointer hover:text-gray-600 transition">
+                  続きを読む
+                </p>
+              </Link>
             </div>
           </div>
 
