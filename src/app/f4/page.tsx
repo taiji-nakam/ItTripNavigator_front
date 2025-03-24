@@ -33,52 +33,22 @@ export default function F4Page() {
         <div className="detail-section">
           <h2 className="section-title">事例概要</h2>
           <p className="section-text">社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。</p>
-          <p className="section-text">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</p>
-          {expandedSections.overview && (
-            <div className="hidden-content">
-              <p>社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。詳細な実装方法や導入事例について説明します。ゼロトラストモデルの主な特徴は、すべてのアクセスを検証し、最小権限の原則に基づいてリソースへのアクセスを制限することです。この事例では、VPN依存から脱却し、ID管理とデバイス認証を強化することで、リモートワーク環境でも安全なアクセスを実現しました。</p>
-            </div>
-          )}
         </div>
         <div className="detail-section">
           <h2 className="section-title">企業概要</h2>
           <p className="section-text">社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。</p>
-          <p className="section-text">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</p>
-          {expandedSections.company && (
-            <div className="hidden-content">
-              <p>社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。</p>
-            </div>
-          )}
         </div>
         <div className="detail-section">
           <h2 className="section-title">抱えている課題 / 背景</h2>
           <p className="section-text">社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。</p>
-          <p className="section-text">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</p>
-          {expandedSections.challenge1 && (
-            <div className="hidden-content">
-              <p>社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。</p>
-            </div>
-          )}
         </div>
         <div className="detail-section">
           <h2 className="section-title">抱えている課題 / 背景</h2>
           <p className="section-text">社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。</p>
-          <p className="section-text">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</p>
-          {expandedSections.challenge2 && (
-            <div className="hidden-content">
-              <p>社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。</p>
-            </div>
-          )}
         </div>
         <div className="detail-section">
           <h2 className="section-title">解決方法</h2>
           <p className="section-text">社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。</p>
-          <p className="section-text">XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX</p>
-          {expandedSections.solution && (
-            <div className="hidden-content">
-              <p>社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。</p>
-            </div>
-          )}
         </div>
       </div>
       <div className="action-buttons">
