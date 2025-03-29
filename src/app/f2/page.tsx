@@ -26,9 +26,11 @@ const Itnavi: React.FC = () => {
       console.log("common is null");
     }
     // Action:/allIssues​
+    // const res = await fetch(process.env.API_ENDPOINT + '/allIssues​', {
+    // ・・・
 
     // Action:/casees/featured
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -40,6 +42,7 @@ const Itnavi: React.FC = () => {
       theme_id: themeId,
     });
     // Action:/searchCase
+
 
     // common更新
     setCommon((prev) => ({ ...prev, search_id: 789 }));
