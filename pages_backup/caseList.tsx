@@ -10,16 +10,18 @@ import { useCommon, Common } from "../contexts/commonContext"
 const Itnavi: React.FC = () => {
   
   const router = useRouter();
-  const { common } = useCommon();
+  const { common, setCommon } = useCommon();
 
   // **TEST** common が更新されたタイミングで search_id をログに出力
-  // useEffect(() => {
-  //   if (common) {
-  //     console.log("common.search_id:", common.search_id);
-  //   } else {
-  //     console.log("common is null");
-  //   }
-  // }, [common]);
+  useEffect(() => {
+    if (common) {
+      // setCommon({ search_id:456});
+      // console.log("common.search_id:", common.search_id);
+      // console.log("common.search_id_sub:", common.search_id_sub);
+    } else {
+      console.log("common is null");
+    }
+  }, [common]);
 
   const handleDtlClick = () => {
     // 次の画面 caseDetail へ遷移

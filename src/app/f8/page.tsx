@@ -1,14 +1,45 @@
+// F8 データ入力
 'use client';
-import { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
+import { useCommon } from "../../../contexts/commonContext"
 
 export default function F8Page() {
-  const router = useRouter();
+  // const router = useRouter();
   const [companyName, setCompanyName] = useState('');
   const [personName, setPersonName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const { common } = useCommon();
+
+  useEffect(() => {
+  // 画面表示時処理
+  // common debug
+    if (common) {
+      console.log("common.search_id:", common.search_id);
+      console.log("common.search_id:", common.search_id_sub);
+      console.log("common.search_id:", common.actionType);
+    } else {
+      console.log("common is null");
+    }
+    // actionTypeによって表示ボタンを制御
+    // エージェントへ相談：1/戦略文書作成:2
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
+  // action:/userEntry(共通)
+  
+  // action:/agentSuport(エージェントへ相談)
+  // f9へ遷移
+
+
+  // action:/strategy(戦略文書作成)
+  // 作成した文書IDをCommonへ保管
+  // setCommon((prev) => ({ ...prev, document_id: 1 }));
+  // f10へ遷移
+
 
   // フォーム送信処理
   const handleSubmit = (e: React.FormEvent) => {
@@ -63,12 +94,16 @@ export default function F8Page() {
         </div>
         
         <div className="action-buttons">
-        <a href="f9" className="action-button">
-          <span className="link-text">エージェントに相談</span>
-        </a>
-        <a href="f10" className="action-button">
-          <span className="link-text">戦略的文章出力</span>
-        </a>
+        <Link href="/f9" passHref legacyBehavior>
+          <a className="action-button">
+            <span className="link-text">エージェントに相談</span>
+          </a>
+        </Link>
+        <Link href="/f10" passHref legacyBehavior>
+          <a className="action-button">
+            <span className="link-text">戦略的文章出力</span>
+          </a>
+        </Link>
       </div>
     </form>
 

@@ -1,21 +1,42 @@
+// F4 事例詳細
 'use client';
-import { useState } from 'react';
+import React, { useEffect } from "react";
 import Link from 'next/link';
-import styles from './page.module.css'; // CSSモジュールを使用する場合
+// import styles from './page.module.css'; // CSSモジュールを使用する場合
 import { useRouter } from 'next/navigation';
+import { useCommon } from "../../../contexts/commonContext"
 
 export default function F4Page() {
   const router = useRouter();
+  const { common } = useCommon();
+
+  useEffect(() => {
+  // 画面表示時処理
+  // common debug
+    if (common) {
+      console.log("common.search_id:", common.search_id);
+      console.log("common.search_id:", common.search_id_sub);
+    } else {
+      console.log("common is null");
+    }
+    // Action:/caseDetail
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 各セクションの展開状態を管理
-  const [expandedSections, setExpandedSections] = useState({
-    overview: false,
-    company: false,
-    challenge1: false,
-    challenge2: false,
-    solution: false
-  // ここに出力ロジックを追加
-  });
+  // const [expandedSections, setExpandedSections] = useState({
+  //   overview: false,
+  //   company: false,
+  //   challenge1: false,
+  //   challenge2: false,
+  //   solution: false
+  // // ここに出力ロジックを追加
+  // });
+
+  // 次画面遷移時にactionTypeを更新する
+  // エージェントへ相談：1/戦略文書作成:2
+  // setCommon((prev) => ({ ...prev, actionType: 1 }));
 
   return (
     <div className="case-detail-container">

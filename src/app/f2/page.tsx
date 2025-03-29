@@ -1,9 +1,11 @@
+// F2 事例検索情報入力
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Dropdown from "../../components/Dropdown";
 import Link from "next/link";
+import { useCommon} from "../../../contexts/commonContext"
 
 const Itnavi: React.FC = () => {
   const router = useRouter();
@@ -12,6 +14,23 @@ const Itnavi: React.FC = () => {
   const [companySizeId, setCompanySizeId] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [themeId, setThemeId] = useState("");
+  const { common, setCommon } = useCommon();
+
+  useEffect(() => {
+    // 画面表示時処理
+    // common debug
+    if (common) {
+      console.log("common.search_id:", common.search_id);
+      console.log("common.search_id:", common.search_id_sub);
+    } else {
+      console.log("common is null");
+    }
+    // Action:/allIssues​
+
+    // Action:/casees/featured
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleGoClick = () => {
     const searchParams = new URLSearchParams({
@@ -20,6 +39,11 @@ const Itnavi: React.FC = () => {
       department_id: departmentId,
       theme_id: themeId,
     });
+    // Action:/searchCase
+
+    // common更新
+    setCommon((prev) => ({ ...prev, search_id: 789 }));
+    setCommon((prev) => ({ ...prev, search_id_sub: 123 }));
     router.push(`/f3?${searchParams.toString()}`);
   };
 

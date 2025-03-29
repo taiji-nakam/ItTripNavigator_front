@@ -1,9 +1,11 @@
+// F3 事例一覧
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Dropdown from "../../components/Dropdown";
 import CaseCard from "../../components/CaseCard";
+import { useCommon } from "../../../contexts/commonContext"
 
 const Itnavi: React.FC = () => {
   const router = useRouter();
@@ -12,6 +14,26 @@ const Itnavi: React.FC = () => {
   const [companySizeId, setCompanySizeId] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [themeId, setThemeId] = useState("");
+  const { common } = useCommon();
+
+  useEffect(() => {
+    // 画面表示時処理
+    // common debug
+    if (common) {
+      console.log("common.search_id:", common.search_id);
+      console.log("common.search_id:", common.search_id_sub);
+    } else {
+      console.log("common is null");
+    }
+    // Action:/cases
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleDtlClick = () => {
+
+    router.push("/f4");
+  };
 
   // 🔹サンプル事例データ（API完成までの仮データ）
   const sampleData = [
@@ -46,10 +68,6 @@ const Itnavi: React.FC = () => {
         "製造・販売・在庫・会計などの業務システムをクラウドERPに統合し、リアルタイムのデータ活用と業務効率化を実現",
     },
   ];
-
-  const handleDtlClick = () => {
-    router.push("/f4");
-  };
 
   const handleGoClick = () => {
     const searchParams = new URLSearchParams({

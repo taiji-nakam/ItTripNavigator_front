@@ -1,13 +1,34 @@
+// F10 戦略文書作成
 'use client';
-import { useState } from 'react';
-import Link from 'next/link';
+import React, { useEffect } from "react";
+// import Link from 'next/link';
+import { useCommon } from "../../../contexts/commonContext"
 
 export default function F10Page() {
+
+
+  const { common } = useCommon();
+
+  useEffect(() => {
+    // 画面表示時処理
+    // common debug
+      if (common) {
+        console.log("common.search_id:", common.search_id);
+        console.log("common.search_id:", common.search_id_sub);
+        console.log("common.search_id:", common.actionType);
+      } else {
+        console.log("common is null");
+      }
+      // action:/strategy​
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
   // 文章出力ボタンのクリックハンドラー
-  const handleOutputClick = () => {
-    console.log('文章を出力しました');
-    // ここに出力ロジックを追加
-  };
+  // const handleOutputClick = () => {
+  //   console.log('文章を出力しました');
+  //   // ここに出力ロジックを追加
+  // };
 
   return (
     <div className="container">

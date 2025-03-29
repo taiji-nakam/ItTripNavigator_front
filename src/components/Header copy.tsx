@@ -1,6 +1,6 @@
-{/*import Link from 'next/link';*/}
+import Link from 'next/link';
 
-{/*export default function Header() {
+export default function Header() {
   return (
     <header className="w-full bg-white shadow-sm py-4">
       <div className="max-w-6xl mx-auto px-4 flex justify-between items-start">
