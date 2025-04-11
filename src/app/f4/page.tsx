@@ -1,12 +1,12 @@
 'use client';
 import React, { useEffect, useState } from "react";
-import Link from 'next/link';
+// import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCommon } from "../../../contexts/commonContext";
 
 export default function F4Page() {
   const router = useRouter();
-  const { common } = useCommon();
+  const { common, setCommon } = useCommon();
   
   // APIから取得した情報を格納する状態を定義
   const [caseDetail, setCaseDetail] = useState({
@@ -25,6 +25,9 @@ export default function F4Page() {
       // todo:テスト用コード
       const search_id=6
       const search_id_sub=5
+      setCommon(prev => ({ ...prev, search_id: search_id }));
+      setCommon(prev => ({ ...prev, search_id_sub: search_id_sub }));
+      // end:テスト用コード
 
       // 検索ID, 検索サブIDを common から取得(前画面から遷移できるようになったらコメント外す)
       // const search_id = common?.search_id;
@@ -32,15 +35,14 @@ export default function F4Page() {
 
       // APIエンドポイントを作成
       const endpoint = process.env.NEXT_PUBLIC_API_ENDPOINT + `/caseDetail?search_id=${search_id}&search_id_sub=${search_id_sub}`;
-
-      
+      console.log(endpoint)
       try {
         const res = await fetch(endpoint, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
         });
         const data = await res.json();
-
+        console.log(data)
          // HTTP のステータスコードが 200 なら正常にデータが取得できたとみなす
          if (res.status === 200) {
           setCaseDetail({
@@ -58,7 +60,7 @@ export default function F4Page() {
         }
       } catch (error) {
         console.error("Error fetching case detail:", error);
-        alert("エラーが発生しました。");
+        alert(error);
       }
     }
     
