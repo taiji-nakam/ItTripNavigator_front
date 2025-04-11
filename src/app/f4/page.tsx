@@ -1,42 +1,69 @@
-// F4 事例詳細
 'use client';
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from 'next/link';
-// import styles from './page.module.css'; // CSSモジュールを使用する場合
 import { useRouter } from 'next/navigation';
-import { useCommon } from "../../../contexts/commonContext"
+import { useCommon } from "../../../contexts/commonContext";
 
 export default function F4Page() {
   const router = useRouter();
   const { common } = useCommon();
+  
+  // APIから取得した情報を格納する状態を定義
+  const [caseDetail, setCaseDetail] = useState({
+    case_id: null,
+    case_name: "",
+    case_summary: "",
+    company_summary: "",
+    initiative_summary: "",
+    issue_background: "",
+    solution_method: "",
+  });
 
   useEffect(() => {
-  // 画面表示時処理
-  // common debug
-    if (common) {
-      console.log("common.search_id:", common.search_id);
-      console.log("common.search_id:", common.search_id_sub);
-    } else {
-      console.log("common is null");
+    async function fetchCaseDetail() {
+ 
+      // todo:テスト用コード
+      const search_id=6
+      const search_id_sub=5
+
+      // 検索ID, 検索サブIDを common から取得(前画面から遷移できるようになったらコメント外す)
+      // const search_id = common?.search_id;
+      // const search_id_sub = common?.search_id_sub;
+
+      // APIエンドポイントを作成
+      const endpoint = process.env.NEXT_PUBLIC_API_ENDPOINT + `/caseDetail?search_id=${search_id}&search_id_sub=${search_id_sub}`;
+
+      
+      try {
+        const res = await fetch(endpoint, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+        const data = await res.json();
+
+         // HTTP のステータスコードが 200 なら正常にデータが取得できたとみなす
+         if (res.status === 200) {
+          setCaseDetail({
+            case_id: data.case_id,
+            case_name: data.case_name,
+            case_summary: data.case_summary,
+            company_summary: data.company_summary,
+            initiative_summary: data.initiative_summary,
+            issue_background: data.issue_background,
+            solution_method: data.solution_method,
+          });
+        } else {
+          // 200 以外の場合は API が返すメッセージをアラート表示する
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching case detail:", error);
+        alert("エラーが発生しました。");
+      }
     }
-    // Action:/caseDetail
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // 各セクションの展開状態を管理
-  // const [expandedSections, setExpandedSections] = useState({
-  //   overview: false,
-  //   company: false,
-  //   challenge1: false,
-  //   challenge2: false,
-  //   solution: false
-  // // ここに出力ロジックを追加
-  // });
-
-  // 次画面遷移時にactionTypeを更新する
-  // エージェントへ相談：1/戦略文書作成:2
-  // setCommon((prev) => ({ ...prev, actionType: 1 }));
+    
+    fetchCaseDetail();
+  }, []); // 初回ロード時のみ実行
 
   return (
     <div className="case-detail-container">
@@ -44,72 +71,84 @@ export default function F4Page() {
         <h1 className="case-detail-title">事例詳細</h1>
         <button 
           className="back-to-list-button" 
-          onClick={() => router.push('/f3')}
-          >
+          onClick={() => router.push('/f3')}>
           事例一覧に戻る
         </button>
       </div>
-
       <div className="case-detail-content">
         <div className="detail-section">
+          <h2 className="section-title">タイトル/企業概要</h2>
+          <p className="section-text">
+            {caseDetail.case_name} / {caseDetail.company_summary}
+          </p>
+        </div>
+        <div className="detail-section">
           <h2 className="section-title">事例概要</h2>
-          <p className="section-text">社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。</p>
+          <p className="section-text">{caseDetail.case_summary}</p>
         </div>
         <div className="detail-section">
-          <h2 className="section-title">企業概要</h2>
-          <p className="section-text">社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。</p>
-        </div>
-        <div className="detail-section">
-          <h2 className="section-title">抱えている課題 / 背景</h2>
-          <p className="section-text">社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。</p>
+          <h2 className="section-title">取り組み概要</h2>
+          <p className="section-text">{caseDetail.initiative_summary}</p>
         </div>
         <div className="detail-section">
           <h2 className="section-title">抱えている課題 / 背景</h2>
-          <p className="section-text">社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。</p>
+          <p className="section-text">{caseDetail.issue_background}</p>
         </div>
         <div className="detail-section">
           <h2 className="section-title">解決方法</h2>
-          <p className="section-text">社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化。</p>
+          <p className="section-text">{caseDetail.solution_method}</p>
         </div>
       </div>
       <div className="action-buttons">
-        <Link href="/f10" passHref legacyBehavior>
-          <a className="action-button">
-            <span className="link-text">戦略文章出力</span>
-          </a>
-        </Link>
-        <Link href="#" passHref legacyBehavior>
-          <a className="action-button">
-            <span className="link-text">この課題が解決できる人材を見てみる</span>
-          </a>
-        </Link>
-        <Link href="/f8" passHref legacyBehavior>
-          <a className="action-button">
-            <span className="link-text">エージェントに人材の相談をする</span>
-          </a>
-        </Link>
-      </div>
+        {/* 戦略文章出力：actionType 2 に設定し、/f8 へ遷移 */}
+        <button
+          className="action-button"
+          onClick={() => {
+            setCommon(prev => ({ ...prev, actionType: 2 }));
+            router.push('/f8');
+          }}
+        >
+          <span className="link-text">戦略文章出力</span>
+        </button>
 
+        {/* この課題が解決できる人材を見てみる：/f6 へ遷移 */}
+        <button
+          className="action-button"
+          onClick={() => {
+            router.push('/f6');
+          }}
+        >
+          <span className="link-text">この課題が解決できる人材を見てみる</span>
+        </button>
+
+        {/* エージェントに人材の相談をする：actionType 1 に設定し、/f8 へ遷移 */}
+        <button
+          className="action-button"
+          onClick={() => {
+            setCommon(prev => ({ ...prev, actionType: 1 }));
+            router.push('/f8');
+          }}
+        >
+          <span className="link-text">エージェントに人材の相談をする</span>
+        </button>
+      </div>
       <style jsx>{`
         .case-detail-container {
           max-width: 1200px;
           margin: 0 auto;
           padding: 20px;
         }
-
         .case-detail-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
           margin-bottom: 20px;
         }
-
         .case-detail-title {
           font-size: 28px;
           font-weight: bold;
           color: #333;
         }
-
         .back-to-list-button {
           background-color: #b22222;
           color: white;
@@ -121,68 +160,32 @@ export default function F4Page() {
           cursor: pointer;
           transition: background-color 0.3s;
         }
-
         .back-to-list-button:hover {
           background-color: #8b0000;
         }
-
         .case-detail-content {
           background-color: white;
           border-radius: 5px;
           padding: 20px;
           margin-bottom: 30px;
         }
-
         .detail-section {
           border-bottom: 1px solid #ddd;
           padding: 20px 0;
-          position: relative;
         }
-
         .section-title {
           font-size: 20px;
           margin-bottom: 15px;
         }
-
         .section-text {
           margin-bottom: 10px;
         }
-
-        .expand-button-container {
-          text-align: right;
-          margin-top: 10px;
-        }
-
-        .expand-button {
-          background-color: transparent;
-          color:rgb(11, 11, 11);
-          border: none;
-          font-weight: right;
-          cursor: pointer;
-          font-size: 13px;
-        }
-
-        .expand-text {
-          display: block;
-          color: #666;
-          font-size: 50px;
-        }
-
-        .hidden-content {
-          margin-top: 15px;
-          padding: 10px;
-          border-left: 0px solid #b22222;
-          background-color: #fff;
-          border-radius: 0;
-        }
-
         .action-buttons {
           display: flex;
           justify-content: center;
           gap: 110px;
           margin-top: 30px;
         }
-
         .action-button {
           background-color: white;
           border: 5px solid #ddd;
@@ -193,20 +196,18 @@ export default function F4Page() {
           text-decoration: none;
           color: #333;
           font-weight: bold;
-          position: relative;
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
         }
-
         .link-text {
           display: block;
           color: rgb(11, 11, 11);
           font-size: 17px;
           margin-top: 10px;
-          text-align: center;
           width: 100%;
+          text-align: center;
         }
       `}</style>
     </div>
