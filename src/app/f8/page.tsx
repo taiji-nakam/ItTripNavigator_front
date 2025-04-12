@@ -1,11 +1,11 @@
 'use client';
-import React, { useState, useEffect } from "react";
-import { useRouter } from 'next/navigation';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useCommon } from "../../../contexts/commonContext";
 
 export default function F8Page() {
   const router = useRouter();
-  const { common } = useCommon();
+  const { common, setCommon } = useCommon();
 
   // フォーム入力用の状態
   const [companyName, setCompanyName] = useState('');
@@ -15,10 +15,10 @@ export default function F8Page() {
   const [departmentName, setDepartmentName] = useState('');
   const [jobTitle, setJobTitle] = useState('');
 
-   // 戦略文章出力中のメッセージ用の状態
-   const [loadingMessage, setLoadingMessage] = useState("");
+  // モーダル表示用状態（処理中のメッセージ）
+  const [loadingMessage, setLoadingMessage] = useState("");
 
-  // バリデーション: 全項目必須。未入力項目があればアラート表示
+  // バリデーション: 全項目必須。未入力があれば alert
   const validateForm = (): boolean => {
     const missing: string[] = [];
     if (!companyName.trim()) missing.push("会社名");
@@ -27,18 +27,15 @@ export default function F8Page() {
     if (!phone.trim()) missing.push("電話番号");
     if (!departmentName.trim()) missing.push("部署");
     if (!jobTitle.trim()) missing.push("役職");
-    // 電話番号: 半角数字と半角ハイフンのみ許可（例: 123-4567-8901）
+
     const phoneRegex = /^[0-9-]+$/;
     if (phone.trim() && !phoneRegex.test(phone.trim())) {
-      missing.push("電話番号（半角数字と半角ハイフンのみを使用してください）");
+      missing.push("電話番号（半角数字と半角ハイフンのみ）");
     }
-    
-    // メールアドレス: 半角英数字記号を含み、メールアドレス形式であることを確認
     const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     if (email.trim() && !emailRegex.test(email.trim())) {
-      missing.push("メールアドレス（正しい形式で入力してください）");
+      missing.push("メールアドレス（正しい形式）");
     }
-
     if (missing.length > 0) {
       alert("以下の項目が未入力または不正です:\n" + missing.join("\n"));
       return false;
@@ -47,14 +44,7 @@ export default function F8Page() {
   };
 
   // 共通のユーザーエントリー API 呼び出し
-  const callUserEntry = async (): Promise<any | null> => {
-    if (common) {
-      console.log("common.search_id:", common.search_id);
-      console.log("common.search_id_sub:", common.search_id_sub);
-      console.log("common.actionType:", common.actionType);
-    } else {
-      console.log("common is null");
-    }
+  const callUserEntry = async (): Promise<{search_id: number, search_id_sub: number, user_id: string} | null> => {
     const payload = {
       search_id: common?.search_id,
       search_id_sub: common?.search_id_sub,
@@ -74,14 +64,14 @@ export default function F8Page() {
       });
       const data = await res.json();
       if (res.status === 200) {
-        return data; // 例: { search_id: 5, search_id_sub: 1, user_id: "4CRY300003" }
+        return data;  // 例: { search_id: 5, search_id_sub: 1, user_id: "4CRY300003" }
       } else {
         alert("UserEntry API error: " + data.message);
         return null;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("UserEntry API error:", error);
-      alert("ユーザー登録でエラーが発生しました: " + error.toString());
+      alert("ユーザー登録でエラーが発生しました: " + String(error));
       return null;
     }
   };
@@ -89,16 +79,17 @@ export default function F8Page() {
   // エージェントに相談ボタン用ハンドラ
   const handleAgentSupport = async () => {
     if (!validateForm()) return;
+    setLoadingMessage("処理中です。しばらくお待ちください");
     const userData = await callUserEntry();
-    if (!userData) return;
-
-    // agentSupport には search_id, search_id_sub, user_id の3項目が必須なため、common から改めて付与
+    if (!userData) {
+      setLoadingMessage("");
+      return;
+    }
     const payload = {
       search_id: common?.search_id,
       search_id_sub: common?.search_id_sub,
       user_id: userData.user_id
     };
-
     try {
       const res = await fetch(process.env.NEXT_PUBLIC_API_ENDPOINT + '/agentSupport', {
         method: 'POST',
@@ -111,29 +102,28 @@ export default function F8Page() {
       } else {
         alert("AgentSupport API error: " + data.message);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("AgentSupport API error:", error);
-      alert("エージェント相談 API 呼び出しでエラーが発生しました: " + error.toString());
+      alert("エージェント相談 API 呼び出しでエラーが発生しました: " + String(error));
+    } finally {
+      setLoadingMessage("");
     }
   };
 
   // 戦略文章出力ボタン用ハンドラ
   const handleStrategy = async () => {
     if (!validateForm()) return;
-    
-    // 表示: 文章作成中のメッセージを表示
     setLoadingMessage("文章を作成中です。しばらくお待ちください");
-
     const userData = await callUserEntry();
-    if (!userData) return;
-
-    // strategy でも同様に必要な項目を payload に付与する
+    if (!userData) {
+      setLoadingMessage("");
+      return;
+    }
     const payload = {
       search_id: common?.search_id,
       search_id_sub: common?.search_id_sub,
       user_id: userData.user_id
     };
-
     try {
       const res = await fetch(process.env.NEXT_PUBLIC_API_ENDPOINT + '/strategy', {
         method: 'POST',
@@ -142,27 +132,27 @@ export default function F8Page() {
       });
       const data = await res.json();
       if (res.status === 200) {
+        setCommon((prev) => ({ ...prev, document_id: data }));
+        // API 成功時は /f10 へ遷移
         router.push('/f10');
       } else {
         alert("Strategy API error: " + data.message);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Strategy API error:", error);
-      alert("戦略文章出力 API 呼び出しでエラーが発生しました: " + error.toString());
+      alert("戦略文章出力 API 呼び出しでエラーが発生しました: " + String(error));
     } finally {
-      // 処理終了後はメッセージをクリア
       setLoadingMessage("");
     }
   };
 
   // 「この課題が解決できる人材を見てみる」ボタン用ハンドラ
-  // const handleTalentView = () => {
-  //   router.push('/f6');
-  // };
+  const handleTalentView = () => {
+    router.push('/f6');
+  };
 
   return (
     <div className="container">
-      {/* モーダル用オーバーレイ：loadingMessage が設定されている間だけ表示 */}
       {loadingMessage && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -171,7 +161,6 @@ export default function F8Page() {
         </div>
       )}
       <h1 className="title">情報取得</h1>
-      
       <form className="form" onSubmit={e => e.preventDefault()}>
         <div className="inputGroup">
           <input
@@ -229,7 +218,7 @@ export default function F8Page() {
         </div>
         
         <div className="action-buttons">
-          {/* 戦略文章出力ボタン：common.actionType が1の場合は無効 */}
+          {/* 戦略文章出力ボタン: common.actionType が 1 の場合は無効 */}
           <button 
             type="button"
             className="action-button"
@@ -238,7 +227,7 @@ export default function F8Page() {
           >
             <span className="link-text">戦略文章出力</span>
           </button>
-          {/* エージェントに相談ボタン：common.actionType が2の場合は無効 */}
+          {/* エージェントに相談ボタン: common.actionType が 2 の場合は無効 */}
           <button 
             type="button"
             className="action-button"
@@ -247,14 +236,13 @@ export default function F8Page() {
           >
             <span className="link-text">エージェントに人材の相談をする</span>
           </button>
-          {/* この課題が解決できる人材を見てみるは無効 
           <button 
             type="button"
             className="action-button"
             onClick={handleTalentView}
           >
             <span className="link-text">この課題が解決できる人材を見てみる</span>
-          </button>*/}
+          </button>
         </div>
       </form>
 
