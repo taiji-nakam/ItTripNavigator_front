@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction  } from "react";
 
-// 🔹 検索条件の型（search_idとしてまとめる）
+// 🔹 検索条件の型（selectionとしてまとめる）
 // export type SearchConditions = {
 //   industry_id: number;
 //   company_size_id: number;
@@ -12,11 +12,15 @@ import { createContext, useContext, useState, ReactNode, Dispatch, SetStateActio
 
 // 🔹 共通データの型（search_idはSearchConditions型へ変更）
 export type Common = {
-  // search_id?: SearchConditions;  // ← ここが変更点
+  // selection?: SearchConditions;  // ← ここが変更点
   search_id?: number;
   search_id_sub?: number;
   actionType?: number;
   document_id?: number;
+  industry_id?: number;
+  company_size_id?: number;
+  department_id?: number;
+  theme_id?: number;
 };
 
 // Context の型
@@ -31,8 +35,8 @@ const CommonContext = createContext<CommonContextType | undefined>(undefined);
 // Provider コンポーネント
 export const CommonProvider = ({ children }: { children: ReactNode }) => {
   const [common, setCommon] = useState<Common | null>({
-    // // 初期値を0で埋めた検索条件で設定
-    // search_id: {
+    // 初期値を0で埋めた検索条件で設定
+    // selection: {
     //   industry_id: 0,
     //   company_size_id: 0,
     //   department_id: 0,
@@ -42,6 +46,10 @@ export const CommonProvider = ({ children }: { children: ReactNode }) => {
     search_id_sub: 0,
     actionType: 0,
     document_id: 0,
+    industry_id: 0,
+    company_size_id: 0,
+    department_id: 0,
+    theme_id: 0,
   });
 
   return (
