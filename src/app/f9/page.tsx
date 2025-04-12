@@ -1,9 +1,9 @@
 // F9 エージェントに相談完了画面
 'use client';
-import React, { useEffect } from "react";
+// import React, { useEffect } from "react";
 // import Link from 'next/link';
 // import { useRouter } from 'next/navigation';
-import { useCommon } from "../../../contexts/commonContext"
+// import { useCommon } from "../../../contexts/commonContext"
 
 export default function F9Page() {
   // const router = useRouter();
@@ -11,21 +11,21 @@ export default function F9Page() {
   // const [personName, setPersonName] = useState('');
   // const [email, setEmail] = useState('');
   // const [phone, setPhone] = useState('');
-  const { common } = useCommon();
+  // const { common } = useCommon();
 
-  useEffect(() => {
-  // 画面表示時処理
-  // common debug
-    if (common) {
-      console.log("common.search_id:", common.search_id);
-      console.log("common.search_id:", common.search_id_sub);
-      console.log("common.search_id:", common.actionType);
-    } else {
-      console.log("common is null");
-    }
+  // useEffect(() => {
+  // // 画面表示時処理
+  // // common debug
+  //   if (common) {
+  //     console.log("common.search_id:", common.search_id);
+  //     console.log("common.search_id:", common.search_id_sub);
+  //     console.log("common.search_id:", common.actionType);
+  //   } else {
+  //     console.log("common is null");
+  //   }
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
   
   // // フォーム送信処理
   // const handleSubmit = (e: React.FormEvent) => {

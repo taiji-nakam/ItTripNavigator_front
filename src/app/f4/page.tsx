@@ -20,52 +20,43 @@ export default function F4Page() {
   });
 
   useEffect(() => {
-    async function fetchCaseDetail() {
- 
-      // todo:テスト用コード
-      const search_id=6
-      const search_id_sub=5
-      setCommon(prev => ({ ...prev, search_id: search_id }));
-      setCommon(prev => ({ ...prev, search_id_sub: search_id_sub }));
-      // end:テスト用コード
-
-      // 検索ID, 検索サブIDを common から取得(前画面から遷移できるようになったらコメント外す)
-      // const search_id = common?.search_id;
-      // const search_id_sub = common?.search_id_sub;
-
-      // APIエンドポイントを作成
-      const endpoint = process.env.NEXT_PUBLIC_API_ENDPOINT + `/caseDetail?search_id=${search_id}&search_id_sub=${search_id_sub}`;
-      console.log(endpoint)
-      try {
-        const res = await fetch(endpoint, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-        });
-        const data = await res.json();
-        console.log(data)
-         // HTTP のステータスコードが 200 なら正常にデータが取得できたとみなす
-         if (res.status === 200) {
-          setCaseDetail({
-            case_id: data.case_id,
-            case_name: data.case_name,
-            case_summary: data.case_summary,
-            company_summary: data.company_summary,
-            initiative_summary: data.initiative_summary,
-            issue_background: data.issue_background,
-            solution_method: data.solution_method,
+     // common の search_id と search_id_sub が定義されている場合にのみ呼び出す
+     if (common?.search_id != null && common?.search_id_sub != null) {
+      async function fetchCaseDetail() {
+        // APIエンドポイントを作成
+        const endpoint =
+          process.env.NEXT_PUBLIC_API_ENDPOINT +
+          `/caseDetail?search_id=${common?.search_id}&search_id_sub=${common?.search_id_sub}`;
+        console.log(endpoint);
+        try {
+          const res = await fetch(endpoint, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
           });
-        } else {
-          // 200 以外の場合は API が返すメッセージをアラート表示する
-          alert(data.message);
+          const data = await res.json();
+          console.log(data);
+          // HTTP のステータスコードが 200 なら正常にデータが取得できたとみなす
+          if (res.status === 200) {
+            setCaseDetail({
+              case_id: data.case_id,
+              case_name: data.case_name,
+              case_summary: data.case_summary,
+              company_summary: data.company_summary,
+              initiative_summary: data.initiative_summary,
+              issue_background: data.issue_background,
+              solution_method: data.solution_method,
+            });
+          } else {
+            alert(data.message);
+          }
+        } catch (error) {
+          console.error("Error fetching case detail:", error);
+          alert(error);
         }
-      } catch (error) {
-        console.error("Error fetching case detail:", error);
-        alert(error);
       }
+      fetchCaseDetail();
     }
-    
-    fetchCaseDetail();
-  }, []); // 初回ロード時のみ実行
+  }, [common?.search_id, common?.search_id_sub]); // 依存配列に必要なパラメータを追加
 
   return (
     <div className="case-detail-container">
