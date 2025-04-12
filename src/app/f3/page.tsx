@@ -1,179 +1,300 @@
-// F3 事例一覧
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Dropdown from "../../components/Dropdown";
 import CaseCard from "../../components/CaseCard";
-import { useCommon } from "../../../contexts/commonContext"
+import { useCommon } from "../../../contexts/commonContext";
 
-const Itnavi: React.FC = () => {
+// 各選択肢の型定義
+type IndustryItem = { industry_id: number; industry_name: string };
+type CompanySizeItem = { company_size_id: number; company_size_name: string };
+type DepartmentItem = { department_id: number; department_name: string };
+type ThemeItem = { theme_id: number; theme_name: string };
+
+type IssueOptions = {
+  industry: IndustryItem[];
+  company_size: CompanySizeItem[];
+  department: DepartmentItem[];
+  theme: ThemeItem[];
+};
+
+type CaseItem = {
+  case_id: number;
+  case_name: string;
+  case_summary: string;
+};
+
+const F3Page: React.FC = () => {
   const router = useRouter();
-  const [isSearchHover, setIsSearchHover] = useState(false);
-  const [industryId, setIndustryId] = useState("");
-  const [companySizeId, setCompanySizeId] = useState("");
-  const [departmentId, setDepartmentId] = useState("");
-  const [themeId, setThemeId] = useState("");
-  const { common } = useCommon();
+  const { common, setCommon } = useCommon();
 
+  // ドロップダウン選択肢の状態
+  const [options, setOptions] = useState<IssueOptions>({
+    industry: [],
+    company_size: [],
+    department: [],
+    theme: [],
+  });
+
+  // ドロップダウンの選択値（初期値は common に保存されている値があればそれを使用）
+  const [selectedIndustry, setSelectedIndustry] = useState<string>(
+    common?.industry_id ? common.industry_id.toString() : ""
+  );
+  const [selectedCompanySize, setSelectedCompanySize] = useState<string>(
+    common?.company_size_id ? common.company_size_id.toString() : ""
+  );
+  const [selectedDepartment, setSelectedDepartment] = useState<string>(
+    common?.department_id ? common.department_id.toString() : ""
+  );
+  const [selectedTheme, setSelectedTheme] = useState<string>(
+    common?.theme_id ? common.theme_id.toString() : ""
+  );
+
+  // [追加] common の各値が変化したら、local state を更新してドロップダウン表示を再同期
   useEffect(() => {
-    // 画面表示時処理
-    // common debug
-    if (common) {
-      console.log("common.search_id:", common.search_id);
-      console.log("common.search_id:", common.search_id_sub);
-    } else {
-      console.log("common is null");
-    }
-    // Action:/cases
+    setSelectedIndustry(common?.industry_id ? common.industry_id.toString() : "");
+    setSelectedCompanySize(common?.company_size_id ? common.company_size_id.toString() : "");
+    setSelectedDepartment(common?.department_id ? common.department_id.toString() : "");
+    setSelectedTheme(common?.theme_id ? common.theme_id.toString() : "");
+  }, [
+    common?.industry_id,
+    common?.company_size_id,
+    common?.department_id,
+    common?.theme_id
+  ]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // 事例リストの状態
+  const [caseList, setCaseList] = useState<CaseItem[]>([]);
+
+  // 初回ロード時： /allIssues API を呼び出して選択肢をセットする
+  useEffect(() => {
+    async function fetchOptions() {
+      const endpoint = process.env.NEXT_PUBLIC_API_ENDPOINT + '/allIssues';
+      try {
+        const res = await fetch(endpoint, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        });
+        const data = await res.json();
+        setOptions({
+          industry: data.industry || [],
+          company_size: data.company_size || [],
+          department: data.department || [],
+          theme: data.theme || [],
+        });
+      } catch (error: unknown) {
+        console.error("Error fetching issue options:", error);
+        alert("選択肢データの取得でエラーが発生しました: " + String(error));
+      }
+    }
+    fetchOptions();
+    console.log("common.company_size:", common?.company_size_id);
   }, []);
 
-  const handleDtlClick = () => {
+  // 共通の search_id, search_id_sub が変更された場合、/cases API を呼び出して事例リストを取得する
+  useEffect(() => {
+    async function fetchCaseList() {
+      if (!common?.search_id || !common?.search_id_sub) {
+        console.log("common の search_id, search_id_sub が設定されていません");
+        return;
+      }
+      const endpoint = process.env.NEXT_PUBLIC_API_ENDPOINT + `/cases?search_id=${common.search_id}&search_id_sub=${common.search_id_sub}`;
+      try {
+        const res = await fetch(endpoint, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        });
+        const data = await res.json();
+        if (res.status === 200) {
+          setCaseList(data);
+        } else {
+          alert(data.message);
+        }
+      } catch (error: unknown) {
+        console.error("Error fetching case list:", error);
+        alert("事例リスト取得でエラーが発生しました: " + String(error));
+      }
+    }
+    fetchCaseList();
+  }, [common?.search_id, common?.search_id_sub]);
 
-    router.push("/f4");
+  // ドロップダウンの変更時：選択値を common に更新
+  const handleDropdownChange = () => {
+    setCommon(prev => ({
+      ...prev,
+      industry_id: selectedIndustry ? parseInt(selectedIndustry) : 0,
+      company_size_id: selectedCompanySize ? parseInt(selectedCompanySize) : 0,
+      department_id: selectedDepartment ? parseInt(selectedDepartment) : 0,
+      theme_id: selectedTheme ? parseInt(selectedTheme) : 0,
+    }));
   };
 
-  // 🔹サンプル事例データ（API完成までの仮データ）
-  const sampleData = [
-    {
-      id: 1,
-      title: "サンプルデータを表示",
-      description:
-        "製造・販売・在庫・会計などの業務システムをクラウドERPに統合し、リアルタイムのデータ活用と業務効率化を実現",
-    },
-    {
-      id: 2,
-      title: "ゼロトラストセキュリティの導入による情報漏洩対策",
-      description:
-        "社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化",
-    },
-    {
-      id: 3,
-      title: "クラウドERP導入による業務効率化とデータ活用",
-      description:
-        "製造・販売・在庫・会計などの業務システムをクラウドERPに統合し、リアルタイムのデータ活用と業務効率化を実現",
-    },
-    {
-      id: 4,
-      title: "ゼロトラストセキュリティの導入による情報漏洩対策",
-      description:
-        "社内外からのアクセスをゼロトラストモデルに移行し、セキュリティリスクを最小化",
-    },
-    {
-      id: 5,
-      title: "クラウドERP導入による業務効率化とデータ活用",
-      description:
-        "製造・販売・在庫・会計などの業務システムをクラウドERPに統合し、リアルタイムのデータ活用と業務効率化を実現",
-    },
-  ];
+  // 「事例を再検索する」ボタン押下時の処理
+  const handleSearchCase = async () => {
+    // payload を作成
+    const payload = {
+      search_id: common?.search_id,
+      search_id_sub: common?.search_id_sub,
+      industry_id: selectedIndustry ? parseInt(selectedIndustry) : undefined,
+      company_size_id: selectedCompanySize ? parseInt(selectedCompanySize) : undefined,
+      department_id: selectedDepartment ? parseInt(selectedDepartment) : undefined,
+      theme_id: selectedTheme ? parseInt(selectedTheme) : undefined,
+      case_id: null
+    };
+    try {
+      // ① /searchCase API（POST）を呼び出す
+      const resSearch = await fetch(process.env.NEXT_PUBLIC_API_ENDPOINT + '/searchCase', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const searchData = await resSearch.json();
+      if (resSearch.status === 200) {
+        // ② common を更新
+        setCommon(prev => ({
+          ...prev,
+          search_id: searchData.search_id,
+          search_id_sub: searchData.search_id_sub,
+          industry_id: selectedIndustry ? parseInt(selectedIndustry) : 0,
+          company_size_id: selectedCompanySize ? parseInt(selectedCompanySize) : 0,
+          department_id: selectedDepartment ? parseInt(selectedDepartment) : 0,
+          theme_id: selectedTheme ? parseInt(selectedTheme) : 0,
+        }));
 
-  const handleGoClick = () => {
-    const searchParams = new URLSearchParams({
-      industry_id: industryId,
-      company_size_id: companySizeId,
-      department_id: departmentId,
-      theme_id: themeId,
-    });
-    router.push(`/f3?${searchParams.toString()}`);
+        // ③ /cases API（GET）を呼び出して、事例リストを再取得する
+        const endpointCases = process.env.NEXT_PUBLIC_API_ENDPOINT + `/cases?search_id=${searchData.search_id}&search_id_sub=${searchData.search_id_sub}`;
+        const resCases = await fetch(endpointCases, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        });
+        const caseData = await resCases.json();
+        if (resCases.status === 200) {
+          setCaseList(caseData);
+        } else if(resCases.status === 404) {
+          alert("条件に該当する事例がありません。\n条件を変更してお試しください。");
+        } else {
+          alert(caseData.message);
+        }
+      } else {
+        alert("SearchCase API error: " + searchData.message);
+      }
+    } catch (error: unknown) {
+      console.error("Error in searchCase API:", error);
+      alert("SearchCase API 呼び出しでエラーが発生しました: " + String(error));
+    }
+  };
+
+  // CaseCard の「続きを読む」がクリックされた場合の処理
+  const handleDtlClick = async (caseId: number) => {
+    const payload = {
+      search_id: common?.search_id,
+      search_id_sub: common?.search_id_sub,
+      case_id: caseId,
+    };
+    console.log(payload);
+    try {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_ENDPOINT + '/case', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (res.status === 200) {
+        setCommon((prev) => ({ ...prev, search_id: data.search_id }));
+        setCommon((prev) => ({ ...prev, search_id_sub: data.search_id_sub }));
+        router.push('/f4');
+      } else {
+        alert("Case更新エラー: " + data.message);
+      }
+    } catch (error: unknown) {
+      console.error("Error updating case:", error);
+      alert("ケース更新でエラーが発生しました: " + String(error));
+    }
   };
 
   return (
     <section className="section-container">
       <h2 className="section-title">事例一覧</h2>
       <div className="flex flex-col md:flex-row gap-8">
-        {/* 左側：カスタムプルダウン */}
+        {/* 左側：各種ドロップダウン */}
         <div className="flex flex-col gap-4 w-full md:w-1/2">
           <Dropdown
             label="業界を指定する"
-            onSelect={setIndustryId}
-            items={[
-              { id: "1", name: "製造業（自動車、電子機器、鉄鋼、化学素材、食品等）" },
-              { id: "2", name: "流通・小売業（百貨店、スーパー、B2B卸売などの物流・販売を担う業界等）" },
-              { id: "3", name: "建設不動産業（建築、土木、不動産、住宅建設等）" },
-              { id: "4", name: "物流・運輸業（貨物輸送、倉庫、海運、物流サービス等）" },
-              { id: "5", name: "エネルギー資源（電力、ガス、再生可能エネルギー等）" },
-              { id: "6", name: "観光サービス（ホテル、レストラン、テーマパーク）" },
-              { id: "7", name: "メディア・エンタメ（テレビ、映像、マスコミ等）" },
-              { id: "8", name: "指定なし" },
-            ]}
+            selected={selectedIndustry}
+            onSelect={(value: string) => {
+              setSelectedIndustry(value);
+              handleDropdownChange();
+            }}
+            items={options.industry.map(item => ({
+              id: item.industry_id.toString(),
+              name: item.industry_name
+            }))}
           />
           <Dropdown
             label="売上規模を指定する"
-            onSelect={setCompanySizeId}
-            items={[
-              { id: "1", name: "〜50億円" },
-              { id: "2", name: "50億円〜100億円" },
-              { id: "3", name: "100億円〜1,000億円" },
-              { id: "4", name: "1,000億円〜5,000億円" },
-              { id: "5", name: "5,000億円" },
-              { id: "6", name: "指定なし" },
-            ]}
+            selected={selectedCompanySize}
+            onSelect={(value: string) => {
+              setSelectedCompanySize(value);
+              handleDropdownChange();
+            }}
+            items={options.company_size.map(item => ({
+              id: item.company_size_id.toString(),
+              name: item.company_size_name
+            }))}
           />
           <Dropdown
             label="部署を指定する"
-            onSelect={setDepartmentId}
-            items={[
-              { id: "1", name: "情報システム部" },
-              { id: "2", name: "DX部" },
-              { id: "3", name: "マーケティング部" },
-              { id: "4", name: "新規事業開発部" },
-              { id: "5", name: "研究開発部" },
-              { id: "6", name: "製造部（工場）" },
-              { id: "7", name: "生産管理・品質管理部" },
-              { id: "8", name: "物流・在庫管理部" },
-              { id: "9", name: "人事部" },
-              { id: "10", name: "その他" },
-              { id: "11", name: "指定しない" },
-            ]}
+            selected={selectedDepartment}
+            onSelect={(value: string) => {
+              setSelectedDepartment(value);
+              handleDropdownChange();
+            }}
+            items={options.department.map(item => ({
+              id: item.department_id.toString(),
+              name: item.department_name
+            }))}
           />
           <Dropdown
             label="テーマを指定する"
-            onSelect={setThemeId}
-            items={[
-              { id: "1", name: "基幹システムや業務システム周辺テーマ" },
-              { id: "2", name: "ITインフラ周辺テーマ" },
-              { id: "3", name: "情報セキュリティやガバナンス周辺テーマ" },
-              { id: "4", name: "生産現場の省人化や業務効率化の周辺テーマ" },
-              { id: "5", name: "スマートファクトリー周辺のテーマ" },
-              { id: "6", name: "サプライチェーン周辺のテーマ" },
-              { id: "7", name: "ITサポート・現場対応周辺のテーマ" },
-              { id: "8", name: "新規事業や既存事業の高度化周辺のテーマ" },
-              { id: "9", name: "データ管理と活用周辺テーマ" },
-              { id: "10", name: "デジタルマーケティング周辺データ" },
-              { id: "11", name: "育成周辺のテーマ" },
-              { id: "12", name: "指定しない" },
-            ]}
+            selected={selectedTheme}
+            onSelect={(value: string) => {
+              setSelectedTheme(value);
+              handleDropdownChange();
+            }}
+            items={options.theme.map(item => ({
+              id: item.theme_id.toString(),
+              name: item.theme_name
+            }))}
           />
-          {/* 🔹検索ボタン：共通クラス */}
-          <button 
-            onClick={handleGoClick}
-            onMouseEnter={() => setIsSearchHover(true)}
-            onMouseLeave={() => setIsSearchHover(false)}
-            className="btn">
-            <img
-              src={isSearchHover ? "/icon-searchbtn-hover.png" : "/icon-searchbtn.png"}
-              alt="検索"
-            />
+          <button className="btn" onClick={handleSearchCase}>
             事例を再検索する
           </button>
         </div>
-
         {/* 右側：事例一覧 */}
         <div className="flex flex-col gap-4 w-full md:w-1/2">
-          {sampleData.map((item) => (
-            <CaseCard
-              key={item.id}
-              title={item.title}
-              description={item.description}
-              onClick={handleDtlClick}
-            />
-          ))}
+          {caseList.length > 0 ? (
+            caseList.map((item) => (
+              <CaseCard
+                key={item.case_id}
+                title={item.case_name}
+                description={item.case_summary}
+                onClick={() => handleDtlClick(item.case_id)}
+              />
+            ))
+          ) : (
+            <p>該当する事例がありません</p>
+          )}
         </div>
       </div>
+      <style jsx>{`
+        .section-container {
+          padding: 2rem;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+      `}</style>
     </section>
   );
 };
 
-export default Itnavi;
+export default F3Page;

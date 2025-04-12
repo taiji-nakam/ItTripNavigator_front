@@ -1,28 +1,37 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 
 interface DropdownItem {
-  id: string;
+  id: string;  // 選択値 (id) は文字列で持つ
   name: string;
 }
 
 type DropdownProps = {
   label: string;
-  items: DropdownItem[];
-  onSelect: (id: string) => void;
+  selected?: string;        // 選択中のIDを親から受け取る
+  items: DropdownItem[];    // 選択肢のリスト
+  onSelect: (id: string) => void; 
 };
 
-const Dropdown: React.FC<DropdownProps> = ({ label, items, onSelect }) => {
+const Dropdown: React.FC<DropdownProps> = ({ label, selected, items, onSelect }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+ 
+  // ★ selected ID と items から表示用の name を導き出す
+  const displayText = useMemo(() => {
+    if (!selected) {
+      return label; // 何も選択されていない場合はラベル表示
+    }
+    // selected(文字列)と item.id が一致する要素を検索
+    const matchedItem = items.find(item => item.id === selected);
+    return matchedItem ? matchedItem.name : label;
+  }, [selected, items, label]);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
-  const handleSelect = (id: string, name: string) => {
-    setSelectedItem(name);
-    setIsOpen(false);
+  const handleSelect = (id: string) => {
     onSelect(id);
+    setIsOpen(false);
   };
 
   return (
@@ -31,7 +40,7 @@ const Dropdown: React.FC<DropdownProps> = ({ label, items, onSelect }) => {
         onClick={toggleDropdown}
         className="w-full px-20 py-5 bg-white rounded-lg shadow text-gray-700 font-semibold flex justify-between items-center"
       >
-        {selectedItem || label}
+        {displayText}
         <img
           src={isOpen ? "/icon-up.png" : "/icon-down.png"}
           alt="トグル"
@@ -45,7 +54,7 @@ const Dropdown: React.FC<DropdownProps> = ({ label, items, onSelect }) => {
             {items.map((item) => (
               <li
                 key={item.id}
-                onClick={() => handleSelect(item.id, item.name)}
+                onClick={() => handleSelect(item.id)}
                 className="p-4 border-b border-gray-200 hover:bg-gray-500 hover:text-white cursor-pointer"
               >
                 {item.name}
