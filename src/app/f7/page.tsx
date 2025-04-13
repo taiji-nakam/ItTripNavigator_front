@@ -12,7 +12,7 @@ interface JobCategory {
 
 export default function F7Page() {
   const router = useRouter();
-  const { common, setCommon } = useCommon();
+  const { setCommon } = useCommon();
 
   // 職種情報を保持する状態
   const [jobCategories, setJobCategories] = useState<JobCategory[]>([]);

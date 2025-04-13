@@ -31,9 +31,12 @@ export default function F6Page() {
   // ページ表示時に API を呼び出して人材データを取得する
   useEffect(() => {
     async function fetchPersonnel() {
-      console.log(common?.search_mode,":",common?.caseTitle,":",common?.caseCompanySummary,":",common?.caseChallenge);
-      const search_id = common?.search_id;
-      const search_id_sub = common?.search_id_sub;
+      if (!common) {
+        console.log("common が設定されていません");
+        return;
+      }
+      const search_id = common.search_id;
+      const search_id_sub = common.search_id_sub;
 
       if (!search_id || !search_id_sub) {
         console.log("common の search_id, search_id_sub が不足しています");
@@ -61,7 +64,8 @@ export default function F6Page() {
       }
     }
     fetchPersonnel();
-  }, [common?.search_id, common?.search_id_sub]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // フィルタリング：
   //  - person.id が空なら除外
@@ -206,11 +210,11 @@ export default function F6Page() {
                     <div className="flex flex-col md:flex-row gap-6">
                       {/* 左側：プロフィール写真 */}
                       <div className="md:w-1/5">
-                        <img
+                        {/* <img
                           src={person.imageUrl || "/placeholder.svg"}
                           alt={`${person.name} のプロフィール写真`}
                           className="w-full aspect-square object-cover"
-                        />
+                        /> */}
                       </div>
 
                       {/* 右側：エグゼクティブサマリー */}

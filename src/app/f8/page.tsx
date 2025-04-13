@@ -147,9 +147,9 @@ export default function F8Page() {
   };
 
   // 「この課題が解決できる人材を見てみる」ボタン用ハンドラ
-  const handleTalentView = () => {
-    router.push('/f6');
-  };
+  // const handleTalentView = () => {
+  //   router.push('/f6');
+  // };
 
   return (
     <div className="container">

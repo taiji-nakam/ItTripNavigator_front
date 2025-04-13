@@ -56,7 +56,8 @@ export default function F4Page() {
       }
       fetchCaseDetail();
     }
-  }, [common?.search_id, common?.search_id_sub]); // 依存配列に必要なパラメータを追加
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="case-detail-container">

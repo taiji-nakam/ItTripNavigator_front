@@ -88,14 +88,13 @@ const F3Page: React.FC = () => {
       }
     }
     fetchOptions();
-    console.log("common.company_size:", common?.company_size_id);
   }, []);
 
-  // 共通の search_id, search_id_sub が変更された場合、/cases API を呼び出して事例リストを取得する
+  // 画面表示時 /cases API を呼び出して事例リストを取得する
   useEffect(() => {
     async function fetchCaseList() {
-      if (!common?.search_id || !common?.search_id_sub) {
-        console.log("common の search_id, search_id_sub が設定されていません");
+      if (!common) {
+        console.log("common が設定されていません");
         return;
       }
       const endpoint = process.env.NEXT_PUBLIC_API_ENDPOINT + `/cases?search_id=${common.search_id}&search_id_sub=${common.search_id_sub}`;
@@ -116,7 +115,8 @@ const F3Page: React.FC = () => {
       }
     }
     fetchCaseList();
-  }, [common?.search_id, common?.search_id_sub]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // ドロップダウンの変更時：選択値を common に更新
   const handleDropdownChange = () => {
