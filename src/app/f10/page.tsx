@@ -43,7 +43,8 @@ export default function F10Page() {
       }
     }
     fetchStrategyDocument();
-  }, [common?.search_id, common?.search_id_sub, common?.document_id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleOutputClick = async () => {
     if (!strategyDocument) {
