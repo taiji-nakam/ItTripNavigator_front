@@ -21,6 +21,11 @@ export type Common = {
   company_size_id?: number;
   department_id?: number;
   theme_id?: number;
+  search_mode?:number;
+  job_name?: string;
+  caseTitle?: string;
+  caseCompanySummary?:string;
+  caseChallenge?:string;
 };
 
 // Context の型
@@ -50,6 +55,11 @@ export const CommonProvider = ({ children }: { children: ReactNode }) => {
     company_size_id: 0,
     department_id: 0,
     theme_id: 0,
+    search_mode: 0,
+    job_name: "",
+    caseTitle: "",
+    caseCompanySummary: "",
+    caseChallenge: "",
   });
 
   return (
