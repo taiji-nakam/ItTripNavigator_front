@@ -149,9 +149,11 @@ const Itnavi: React.FC = () => {
         throw new Error("Failed to submit search parameters")
       }
 
-      // # common更新
+      // common更新
       setCommon((prev) => ({
         ...prev,
+        search_id: data.search_id,
+        search_id_sub: data.search_id_sub,
         industry_id: industryId ? Number.parseInt(industryId) : 0,
         company_size_id: companySizeId ? Number.parseInt(companySizeId) : 0,
         department_id: departmentId ? Number.parseInt(departmentId) : 0,
