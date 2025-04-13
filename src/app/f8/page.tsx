@@ -234,15 +234,15 @@ export default function F8Page() {
             disabled={common?.actionType === 2}
             onClick={handleAgentSupport}
           >
-            <span className="link-text">エージェントに人材の相談をする</span>
+          <span className="link-text">エージェントに人材の相談をする</span>
           </button>
-          <button 
+          {/*<button 
             type="button"
             className="action-button"
             onClick={handleTalentView}
           >
             <span className="link-text">この課題が解決できる人材を見てみる</span>
-          </button>
+          </button>*/}
         </div>
       </form>
 

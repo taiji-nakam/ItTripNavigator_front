@@ -1,95 +1,110 @@
-"use client"
-import { useState } from "react"
-import { CheckCircle } from "lucide-react"
-import { useRouter } from "next/navigation"
+"use client";
+import { useState, useEffect } from "react";
+import { CheckCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useCommon } from "../../../contexts/commonContext";
 
-// ダーツのSVGアイコンコンポーネント
-const DartIcon = ({ size = 40, className = "" }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <circle cx="12" cy="12" r="10" />
-    <circle cx="12" cy="12" r="6" />
-    <circle cx="12" cy="12" r="2" />
-    <path d="M12 2v4" />
-    <path d="M12 18v4" />
-    <path d="M4.93 4.93l2.83 2.83" />
-    <path d="M16.24 16.24l2.83 2.83" />
-    <path d="M2 12h4" />
-    <path d="M18 12h4" />
-    <path d="M4.93 19.07l2.83-2.83" />
-    <path d="M16.24 7.76l4.24-4.24" />
-    <path d="M18 2l-6 6" />
-    <path d="M14 6l-4 4" />
-  </svg>
-)
+// 職種情報の型定義
+interface JobCategory {
+  job_id: number;
+  job_name: string;
+}
 
-// 職種のリストを画像の順序に合わせて並び替え
-const jobCategories = [
-  { id: "1", name: "ビジネスアーキテクト" },
-  { id: "2", name: "ITコンサルタント/PM" },
-  { id: "3", name: "PO/PdM" },
-  { id: "4", name: "業務システム開発エンジニア" },
-  { id: "5", name: "WEBサービス開発エンジニア" },
-  { id: "6", name: "NW/SV/DBエンジニア" },
-  { id: "7", name: "クラウドエンジニア" },
-  { id: "8", name: "セキュリティエンジニア/コンサルタント" },
-  { id: "9", name: "データサイエンティスト/アナリスト" },
-  { id: "10", name: "データ基盤エンジニア" },
-  { id: "11", name: "AI/機械学習エンジニア" },
-  { id: "12", name: "IoTエンジニア" },
-  { id: "13", name: "UI/UXデザイナー/コンサルタント" },
-  { id: "14", name: "デジタルマーケター" },
-]
+export default function F7Page() {
+  const router = useRouter();
+  const { common, setCommon } = useCommon();
 
-export default function ProSearchPage() {
-  const router = useRouter()
-  // 選択された職種のIDを管理（単一選択のため、配列ではなく単一の文字列に変更）
-  const [selectedJob, setSelectedJob] = useState<string>("")
+  // 職種情報を保持する状態
+  const [jobCategories, setJobCategories] = useState<JobCategory[]>([]);
+  // 選択された職種ID（単一選択・文字列）
+  const [selectedJob, setSelectedJob] = useState<string>("");
 
-  // 職種の選択/選択解除を処理する関数（単一選択に修正）
+  // ① ページ表示時に /job API を呼び出して職種情報を取得する
+  useEffect(() => {
+    async function fetchJobCategories() {
+      const endpoint = process.env.NEXT_PUBLIC_API_ENDPOINT + "/job";
+      try {
+        const res = await fetch(endpoint, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" }
+        });
+        const data = await res.json();
+        if (res.status === 200) {
+          setJobCategories(data);
+        } else {
+          alert("職種情報 API error: " + data.message);
+        }
+      } catch (error: unknown) {
+        console.error("Error fetching job categories:", error);
+        alert("職種情報の取得でエラーが発生しました: " + String(error));
+      }
+    }
+    fetchJobCategories();
+  }, []);
+
+  // 職種の選択（単一選択）
   const toggleJobSelection = (id: string) => {
-    // 既に選択されている職種をクリックした場合は選択解除
     if (selectedJob === id) {
-      setSelectedJob("")
+      setSelectedJob("");
     } else {
-      // それ以外の場合は新しい職種を選択（以前の選択は自動的にクリアされる）
-      setSelectedJob(id)
+      setSelectedJob(id);
     }
-  }
+  };
 
-  // 検索ボタンのクリックハンドラ - f6ページに遷移するように変更
-  const handleSearch = () => {
-    if (selectedJob) {
-      // 選択された職種の名前を取得
-      const selectedJobName = jobCategories.find((job) => job.id === selectedJob)?.name || ""
-
-      // 選択された職種IDと名前をクエリパラメータとして渡す
-      router.push(`/f6?jobIds=${selectedJob}&jobNames=${encodeURIComponent(selectedJobName)}`)
-    } else {
-      alert("職種を選択してください")
+  // ② 選択中のプロ人材に関してエージェントに相談ボタン押下時の処理
+  const handleSearch = async () => {
+    if (!selectedJob) {
+      alert("職種を選択してください");
+      return;
     }
-  }
+    // 選択された職種の名称を取得
+    const selectedJobObj = jobCategories.find(
+      (job) => job.job_id.toString() === selectedJob
+    );
+    const selectedJobName = selectedJobObj ? selectedJobObj.job_name : "";
+
+    // payload の作成（search_id, search_id_sub は空文字で OK）
+    const payload = {
+      search_id: null,
+      search_id_sub: null,
+      job_id: parseInt(selectedJob)
+    };
+
+    try {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_ENDPOINT + "/searchTalent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.status === 200) {
+        // API から戻ってきた search_id, search_id_sub を common に更新
+        setCommon((prev) => ({
+          ...prev,
+          search_id: data.search_id,
+          search_id_sub: data.search_id_sub,
+          search_mode: 1,
+          job_name: selectedJobName
+        }));
+        router.push("/f6");
+      } else {
+        alert("SearchTalent API error: " + data.message);
+      }
+    } catch (error: unknown) {
+      console.error("Error calling searchTalent API:", error);
+      alert("検索履歴登録でエラーが発生しました: " + String(error));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#BFBDBD] text-[#2D2D2D] flex flex-col items-center">
       <div className="w-full max-w-4xl px-4 pt-8 pb-10">
-        {/* タイトルとサブタイトルを左揃えに変更 */}
+        {/* タイトルとサブタイトル */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-4 text-left">プロ人材検索</h1>
-
           <div className="flex items-center">
             <div className="w-10 h-10 mr-3 flex-shrink-0 text-blue-500">
-              <DartIcon size={40} />
+              {/* 必要であれば DartIcon コンポーネントを配置 */}
             </div>
             <h2 className="text-2xl font-bold">16,000人の人材DBから的確なプロ人材をご紹介</h2>
           </div>
@@ -99,32 +114,32 @@ export default function ProSearchPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
             {jobCategories.map((job) => (
               <div
-                key={job.id}
+                key={job.job_id}
                 className="flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors"
-                onClick={() => toggleJobSelection(job.id)}
+                onClick={() => toggleJobSelection(job.job_id.toString())}
               >
                 <div
                   className={`w-6 h-6 rounded-full border flex items-center justify-center mr-3 ${
-                    selectedJob === job.id ? "bg-blue-500 border-blue-500 text-white" : "border-gray-400"
+                    selectedJob === job.job_id.toString()
+                      ? "bg-blue-500 border-blue-500 text-white"
+                      : "border-gray-400"
                   }`}
                 >
-                  {selectedJob === job.id && <CheckCircle size={16} />}
+                  {selectedJob === job.job_id.toString() && <CheckCircle size={16} />}
                 </div>
-                <span className="text-lg">{job.name}</span>
+                <span className="text-lg">{job.job_name}</span>
               </div>
             ))}
           </div>
         </div>
 
         <div className="flex justify-center mt-8">
-          {/* ボタンのスタイルを他のページと統一 */}
           <button className="action-button" onClick={handleSearch} disabled={!selectedJob}>
             <span className="link-text">選択中のプロ人材をエージェントに相談</span>
           </button>
         </div>
       </div>
 
-      {/* 他のページと統一したボタンスタイル */}
       <style jsx>{`
         .action-button {
           background-color: white;
@@ -144,20 +159,17 @@ export default function ProSearchPage() {
           transition: all 0.3s ease;
           box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
-
         .action-button:hover {
           border-color: #b22222;
           transform: translateY(-5px);
           box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-
         .action-button:disabled {
           opacity: 0.6;
           cursor: not-allowed;
           transform: none;
           box-shadow: none;
         }
-
         .link-text {
           display: block;
           color: rgb(11, 11, 11);
@@ -167,6 +179,5 @@ export default function ProSearchPage() {
         }
       `}</style>
     </div>
-  )
+  );
 }
-

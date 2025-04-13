@@ -108,6 +108,13 @@ export default function F4Page() {
         <button
           className="action-button"
           onClick={() => {
+            setCommon(prev => ({
+              ...prev,
+              search_mode: 0,
+              caseTitle: caseDetail.case_name,
+              caseCompanySummary: caseDetail.case_summary,
+              caseChallenge: caseDetail.issue_background
+            }));
             router.push('/f6');
           }}
         >
@@ -118,7 +125,7 @@ export default function F4Page() {
         <button
           className="action-button"
           onClick={() => {
-            setCommon(prev => ({ ...prev, actionType: 1 }));
+            setCommon(prev => ({ ...prev, actionType: 1 }));           
             router.push('/f8');
           }}
         >
