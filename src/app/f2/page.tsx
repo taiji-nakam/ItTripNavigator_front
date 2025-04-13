@@ -26,6 +26,12 @@ type CaseItem = {
   case_summary: string;
 };
 
+// # 代表事例選択時のAPIレスポンス型
+type SearchCaseResponse = {
+  search_id: number;
+  search_id_sub: number;
+};
+
 const Itnavi: React.FC = () => {
   const router = useRouter()
   const [isSearchHover, setIsSearchHover] = useState(false)
@@ -127,6 +133,7 @@ const Itnavi: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // # 検索ボタン押下時の処理
   const handleGoClick = async () => {
     try {
       // # Action:/searchCase
@@ -149,7 +156,9 @@ const Itnavi: React.FC = () => {
         throw new Error("Failed to submit search parameters")
       }
 
-      // common更新
+      const data: SearchCaseResponse = await response.json()
+
+      // # common更新
       setCommon((prev) => ({
         ...prev,
         search_id: data.search_id,
@@ -173,6 +182,40 @@ const Itnavi: React.FC = () => {
     }
   }
 
+  // # 代表事例選択時の処理（searchCaseDirect）
+  const handleCaseClick = async (caseId: number) => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/searchCaseDirect`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          search_id: common?.search_id ?? null,
+          search_id_sub: common?.search_id_sub ?? null,
+          case_id: caseId,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to register direct case search")
+      }
+
+      const data: SearchCaseResponse = await response.json()
+
+      // # common更新（search_id, search_id_sub）
+      setCommon((prev) => ({
+        ...prev,
+        search_id: data.search_id,
+        search_id_sub: data.search_id_sub,
+      }))
+
+      router.push(`/f4?case_id=${caseId}`)
+    } catch (error) {
+      console.error("Error selecting featured case:", error)
+    }
+  }
+
   return (
     <>
       <section className="section-container">
@@ -189,11 +232,12 @@ const Itnavi: React.FC = () => {
                   <h3 className="text-xl font-bold text-center mb-4">{caseItem.case_name}</h3>
                   <hr className="border-gray-300 mb-4" />
                   <p className="text-sm text-gray-700">{caseItem.case_summary}</p>
-                  <Link href={`/f4?case_id=${caseItem.case_id}`}>
-                    <p className="text-right text-xs text-gray-700 mt-4 cursor-pointer hover:text-gray-600 transition">
-                      続きを読む
-                    </p>
-                  </Link>
+                  <button
+                    onClick={() => handleCaseClick(caseItem.case_id)}
+                    className="text-right text-xs text-gray-700 mt-4 cursor-pointer hover:text-gray-600 transition"
+                  >
+                    続きを読む
+                  </button>
                 </div>
               ))
             ) : (
