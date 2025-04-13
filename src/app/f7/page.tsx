@@ -53,32 +53,28 @@ const jobCategories = [
 
 export default function ProSearchPage() {
   const router = useRouter()
-  // 選択された職種のIDを管理
-  const [selectedJobs, setSelectedJobs] = useState<string[]>([])
+  // 選択された職種のIDを管理（単一選択のため、配列ではなく単一の文字列に変更）
+  const [selectedJob, setSelectedJob] = useState<string>("")
 
-  // 職種の選択/選択解除を処理する関数
+  // 職種の選択/選択解除を処理する関数（単一選択に修正）
   const toggleJobSelection = (id: string) => {
-    if (selectedJobs.includes(id)) {
-      setSelectedJobs(selectedJobs.filter((jobId) => jobId !== id))
+    // 既に選択されている職種をクリックした場合は選択解除
+    if (selectedJob === id) {
+      setSelectedJob("")
     } else {
-      setSelectedJobs([...selectedJobs, id])
+      // それ以外の場合は新しい職種を選択（以前の選択は自動的にクリアされる）
+      setSelectedJob(id)
     }
   }
 
-  // 検索ボタンのクリックハンドラ - personnel-skill-summaryページに遷移するように変更
+  // 検索ボタンのクリックハンドラ - f6ページに遷移するように変更
   const handleSearch = () => {
-    if (selectedJobs.length > 0) {
+    if (selectedJob) {
       // 選択された職種の名前を取得
-      const selectedJobNames = selectedJobs
-        .map((id) => jobCategories.find((job) => job.id === id)?.name)
-        .filter(Boolean) as string[]
+      const selectedJobName = jobCategories.find((job) => job.id === selectedJob)?.name || ""
 
       // 選択された職種IDと名前をクエリパラメータとして渡す
-      router.push(
-        `/personnel-skill-summary?jobIds=${selectedJobs.join(",")}&jobNames=${encodeURIComponent(
-          selectedJobNames.join(","),
-        )}`,
-      )
+      router.push(`/f6?jobIds=${selectedJob}&jobNames=${encodeURIComponent(selectedJobName)}`)
     } else {
       alert("職種を選択してください")
     }
@@ -87,13 +83,16 @@ export default function ProSearchPage() {
   return (
     <div className="min-h-screen bg-[#BFBDBD] text-[#2D2D2D] flex flex-col items-center">
       <div className="w-full max-w-4xl px-4 pt-8 pb-10">
-        <h1 className="text-3xl font-bold mb-8 text-center">プロ人材検索</h1>
+        {/* タイトルとサブタイトルを左揃えに変更 */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-4 text-left">プロ人材検索</h1>
 
-        <div className="flex items-center mb-8 justify-center">
-          <div className="w-10 h-10 mr-3 flex-shrink-0 text-blue-500">
-            <DartIcon size={40} />
+          <div className="flex items-center">
+            <div className="w-10 h-10 mr-3 flex-shrink-0 text-blue-500">
+              <DartIcon size={40} />
+            </div>
+            <h2 className="text-2xl font-bold">16,000人の人材DBから的確なプロ人材をご紹介</h2>
           </div>
-          <h2 className="text-2xl font-bold">16,000人の人材DBから的確なプロ人材をご紹介</h2>
         </div>
 
         <div className="bg-white p-8 rounded-lg shadow-md mx-auto">
@@ -106,10 +105,10 @@ export default function ProSearchPage() {
               >
                 <div
                   className={`w-6 h-6 rounded-full border flex items-center justify-center mr-3 ${
-                    selectedJobs.includes(job.id) ? "bg-blue-500 border-blue-500 text-white" : "border-gray-400"
+                    selectedJob === job.id ? "bg-blue-500 border-blue-500 text-white" : "border-gray-400"
                   }`}
                 >
-                  {selectedJobs.includes(job.id) && <CheckCircle size={16} />}
+                  {selectedJob === job.id && <CheckCircle size={16} />}
                 </div>
                 <span className="text-lg">{job.name}</span>
               </div>
@@ -118,15 +117,56 @@ export default function ProSearchPage() {
         </div>
 
         <div className="flex justify-center mt-8">
-          <button
-            className="bg-white border-2 border-gray-300 text-[#2D2D2D] py-3 px-6 rounded-full font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleSearch}
-            disabled={selectedJobs.length === 0}
-          >
-            選択中のプロ人材をエージェントに相談
+          {/* ボタンのスタイルを他のページと統一 */}
+          <button className="action-button" onClick={handleSearch} disabled={!selectedJob}>
+            <span className="link-text">選択中のプロ人材をエージェントに相談</span>
           </button>
         </div>
       </div>
+
+      {/* 他のページと統一したボタンスタイル */}
+      <style jsx>{`
+        .action-button {
+          background-color: white;
+          border: 5px solid #ddd;
+          border-radius: 20px;
+          padding: 20px;
+          text-align: center;
+          width: 250px;
+          text-decoration: none;
+          color: #333;
+          font-weight: bold;
+          position: relative;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .action-button:hover {
+          border-color: #b22222;
+          transform: translateY(-5px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-button:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+
+        .link-text {
+          display: block;
+          color: rgb(11, 11, 11);
+          font-size: 16px;
+          text-align: center;
+          width: 100%;
+        }
+      `}</style>
     </div>
   )
 }
+
