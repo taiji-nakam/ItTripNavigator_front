@@ -22,6 +22,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
+        
+      - name: Create .env file
+        run: |
+          echo "NEXT_PUBLIC_API_ENDPOINT=${{ secrets.NEXT_PUBLIC_API_ENDPOINT }}" >> .env
 
       - name: npm install, build, and test
         run: |
