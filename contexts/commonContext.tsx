@@ -26,6 +26,9 @@ export type Common = {
   caseTitle?: string;
   caseCompanySummary?:string;
   caseChallenge?:string;
+  timing?:string;
+  domain?:string;
+  free_word?:string;
 };
 
 // Context の型
@@ -60,6 +63,9 @@ export const CommonProvider = ({ children }: { children: ReactNode }) => {
     caseTitle: "",
     caseCompanySummary: "",
     caseChallenge: "",
+    timing:"",
+    domain:"",
+    free_word:"",
   });
 
   return (
