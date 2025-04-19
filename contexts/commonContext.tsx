@@ -13,20 +13,23 @@ import { createContext, useContext, useState, type ReactNode, type Dispatch, typ
 // 🔹 共通データの型（search_idはSearchConditions型へ変更）
 export type Common = {
   // selection?: SearchConditions;  // ← ここが変更点
-  search_id?: number
-  search_id_sub?: number
-  actionType?: number
-  document_id?: number
-  industry_id?: number
-  company_size_id?: number
-  department_id?: number
-  theme_id?: number
-  search_mode?: number
-  job_name?: string
-  caseTitle?: string
-  caseCompanySummary?: string
-  caseChallenge?: string
-}
+  search_id?: number;
+  search_id_sub?: number;
+  actionType?: number;
+  document_id?: number;
+  industry_id?: number;
+  company_size_id?: number;
+  department_id?: number;
+  theme_id?: number;
+  search_mode?:number;
+  job_name?: string;
+  caseTitle?: string;
+  caseCompanySummary?:string;
+  caseChallenge?:string;
+  timing?:string;
+  domain?:string;
+  free_word?:string;
+};
 
 // Context の型
 type CommonContextType = {
@@ -60,7 +63,10 @@ export const CommonProvider = ({ children }: { children: ReactNode }) => {
     caseTitle: "",
     caseCompanySummary: "",
     caseChallenge: "",
-  })
+    timing:"",
+    domain:"",
+    free_word:"",
+  });
 
   return <CommonContext.Provider value={{ common, setCommon }}>{children}</CommonContext.Provider>
 }
