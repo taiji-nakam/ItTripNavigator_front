@@ -1,13 +1,12 @@
-'use client';
-import React, { useEffect, useState } from "react";
-// import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useCommon } from "../../../contexts/commonContext";
+"use client"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useCommon } from "../../../contexts/commonContext"
 
 export default function F4Page() {
-  const router = useRouter();
-  const { common, setCommon } = useCommon();
-  
+  const router = useRouter()
+  const { common, setCommon } = useCommon()
+
   // APIから取得した情報を格納する状態を定義
   const [caseDetail, setCaseDetail] = useState({
     case_id: null,
@@ -17,24 +16,24 @@ export default function F4Page() {
     initiative_summary: "",
     issue_background: "",
     solution_method: "",
-  });
+  })
 
   useEffect(() => {
-     // common の search_id と search_id_sub が定義されている場合にのみ呼び出す
-     if (common?.search_id != null && common?.search_id_sub != null) {
+    // common の search_id と search_id_sub が定義されている場合にのみ呼び出す
+    if (common?.search_id != null && common?.search_id_sub != null) {
       async function fetchCaseDetail() {
         // APIエンドポイントを作成
         const endpoint =
           process.env.NEXT_PUBLIC_API_ENDPOINT +
-          `/caseDetail?search_id=${common?.search_id}&search_id_sub=${common?.search_id_sub}`;
-        console.log(endpoint);
+          `/caseDetail?search_id=${common?.search_id}&search_id_sub=${common?.search_id_sub}`
+        console.log(endpoint)
         try {
           const res = await fetch(endpoint, {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json' },
-          });
-          const data = await res.json();
-          console.log(data);
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          })
+          const data = await res.json()
+          console.log(data)
           // HTTP のステータスコードが 200 なら正常にデータが取得できたとみなす
           if (res.status === 200) {
             setCaseDetail({
@@ -45,27 +44,25 @@ export default function F4Page() {
               initiative_summary: data.initiative_summary,
               issue_background: data.issue_background,
               solution_method: data.solution_method,
-            });
+            })
           } else {
-            alert(data.message);
+            alert(data.message)
           }
         } catch (error) {
-          console.error("Error fetching case detail:", error);
-          alert(error);
+          console.error("Error fetching case detail:", error)
+          alert(error)
         }
       }
-      fetchCaseDetail();
+      fetchCaseDetail()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   return (
     <div className="case-detail-container">
       <div className="case-detail-header">
         <h1 className="case-detail-title">事例詳細</h1>
-        <button 
-          className="back-to-list-button" 
-          onClick={() => router.push('/f3')}>
+        <button className="back-to-list-button" onClick={() => router.push("/f3")}>
           事例一覧に戻る
         </button>
       </div>
@@ -98,39 +95,39 @@ export default function F4Page() {
         <button
           className="action-button"
           onClick={() => {
-            setCommon(prev => ({ ...prev, actionType: 2 }));
-            router.push('/f8');
+            setCommon((prev) => ({ ...prev, actionType: 2 }))
+            router.push("/f8")
           }}
         >
-          <span className="link-text">戦略文章出力</span>
+          <span className="link-text">DX要件整理シート</span>
         </button>
 
         {/* この課題が解決できる人材を見てみる：/f6 へ遷移 */}
         <button
           className="action-button"
           onClick={() => {
-            setCommon(prev => ({
+            setCommon((prev) => ({
               ...prev,
               search_mode: 0,
               caseTitle: caseDetail.case_name,
               caseCompanySummary: caseDetail.case_summary,
-              caseChallenge: caseDetail.issue_background
-            }));
-            router.push('/f6');
+              caseChallenge: caseDetail.issue_background,
+            }))
+            router.push("/f6")
           }}
         >
-          <span className="link-text">この課題が解決できる人材を見てみる</span>
+          <span className="link-text">この課題が解決できる人材</span>
         </button>
 
         {/* エージェントに人材の相談をする：actionType 1 に設定し、/f8 へ遷移 */}
         <button
           className="action-button"
           onClick={() => {
-            setCommon(prev => ({ ...prev, actionType: 1 }));           
-            router.push('/f8');
+            setCommon((prev) => ({ ...prev, actionType: 1 }))
+            router.push("/f8")
           }}
         >
-          <span className="link-text">エージェントに人材の相談をする</span>
+          <span className="link-text">エージェントに人材の相談</span>
         </button>
       </div>
       <style jsx>{`
@@ -144,6 +141,9 @@ export default function F4Page() {
           justify-content: space-between;
           align-items: center;
           margin-bottom: 20px;
+          /* 変更: ヘッダーのレスポンシブ対応 */
+          flex-wrap: wrap;
+          gap: 10px;
         }
         .case-detail-title {
           font-size: 28px;
@@ -184,16 +184,23 @@ export default function F4Page() {
         .action-buttons {
           display: flex;
           justify-content: center;
-          gap: 110px;
+          /* 変更: ギャップを110pxから20pxに縮小 */
+          gap: 20px;
           margin-top: 30px;
+          /* 変更: 画面幅が狭いときに折り返すように */
+          flex-wrap: wrap;
         }
         .action-button {
           background-color: white;
           border: 5px solid #ddd;
           border-radius: 20px;
-          padding: 20px;
+          /* 変更: パディングを調整 */
+          padding: 15px;
           text-align: center;
-          width: 20%;
+          /* 変更: 幅を20%から固定幅に変更 */
+          width: 250px;
+          /* 変更: 最小の高さを設定 */
+          min-height: 100px;
           text-decoration: none;
           color: #333;
           font-weight: bold;
@@ -201,16 +208,43 @@ export default function F4Page() {
           flex-direction: column;
           align-items: center;
           justify-content: center;
+          /* 変更: 下部に余白を追加 */
+          margin-bottom: 15px;
         }
         .link-text {
           display: block;
           color: rgb(11, 11, 11);
-          font-size: 17px;
+          /* 変更: フォントサイズを調整 */
+          font-size: 16px;
           margin-top: 10px;
           width: 100%;
           text-align: center;
         }
+        
+        /* 変更: レスポンシブ対応のためのメディアクエリを追加 */
+        @media (max-width: 768px) {
+          .action-buttons {
+            /* 変更: モバイルでは縦並びに */
+            flex-direction: column;
+            align-items: center;
+          }
+          .action-button {
+            /* 変更: モバイルでは画面幅の80%に */
+            width: 80%;
+            max-width: 300px;
+          }
+          .case-detail-header {
+            /* 変更: モバイルではヘッダーを縦並びに */
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .back-to-list-button {
+            /* 変更: ボタンの位置調整 */
+            align-self: flex-start;
+          }
+        }
       `}</style>
     </div>
-  );
+  )
 }
+
