@@ -16,13 +16,12 @@ const Itnavi: React.FC = () => {
           <div className="flex flex-col lg:flex-row items-center justify-between w-full mb-10 gap-8">
             {/* テキスト側 */}
             <div className="w-full lg:w-1/2 text-center lg:text-left">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 leading-snug mb-4">
-                デジタル変革を
-                <br />
-                簡単に、早く、正確に
-              </h1>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 leading-snug mb-4">
+  <span className="whitespace-nowrap block">デジタル変革のヒントを</span>
+  <span className="block">今すぐ探そう</span>
+</h1>
               <p className="text-white text-base sm:text-lg font-bold">
-                事例紹介からあなたのDX推進を支援します
+                他社事例紹介からあなたのDX推進を支援します
               </p>
             </div>
 

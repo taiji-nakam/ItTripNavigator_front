@@ -1,6 +1,9 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import type React from "react" // 👈 変更: useRef, useEffect を追加
+import { useState, useMemo, useRef, useEffect } from "react"
+
+
 
 interface DropdownItem {
   id: string;  // 選択値 (id) は文字列で持つ
@@ -16,7 +19,32 @@ type DropdownProps = {
 
 const Dropdown: React.FC<DropdownProps> = ({ label, selected, items, onSelect }) => {
   const [isOpen, setIsOpen] = useState(false);
- 
+
+   // 👇 追加: ドロップダウン要素への参照を作成
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+   // 👇 追加: ドロップダウン外のクリックを検知するためのイベントリスナー
+  useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+       // dropdownRefが存在し、クリックされた要素がドロップダウン内でない場合
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+
+     // ドロップダウンが開いている時だけイベントリスナーを追加
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
+
+     // クリーンアップ関数
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+   }, [isOpen]) // isOpenの状態が変わった時だけ実行
+   // 👆 追加: useEffect ここまで
+
+
   // ★ selected ID と items から表示用の name を導き出す
   const displayText = useMemo(() => {
     if (!selected) {
@@ -35,7 +63,9 @@ const Dropdown: React.FC<DropdownProps> = ({ label, selected, items, onSelect })
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
+      {" "}
+      {/* 👈 変更: ref属性を追加 */}
       <button
         onClick={toggleDropdown}
         className="w-full px-20 py-5 bg-white rounded-lg shadow text-gray-700 font-semibold flex justify-between items-center"

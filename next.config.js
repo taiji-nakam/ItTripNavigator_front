@@ -1,7 +1,7 @@
-//import type { NextConfig } from "next";
+// import type { NextConfig } from "next"; ← コメントアウトでOK
 
-const nextConfig= {
-output: 'standalone'
+const nextConfig = {
+    output: "standalone",
 };
-
-export default nextConfig;
+  
+module.exports = nextConfig;
