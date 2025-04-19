@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import { createContext, useContext, useState, ReactNode, Dispatch, SetStateAction  } from "react";
+import { createContext, useContext, useState, type ReactNode, type Dispatch, type SetStateAction } from "react"
 
 // 🔹 検索条件の型（selectionとしてまとめる）
 // export type SearchConditions = {
@@ -13,29 +13,29 @@ import { createContext, useContext, useState, ReactNode, Dispatch, SetStateActio
 // 🔹 共通データの型（search_idはSearchConditions型へ変更）
 export type Common = {
   // selection?: SearchConditions;  // ← ここが変更点
-  search_id?: number;
-  search_id_sub?: number;
-  actionType?: number;
-  document_id?: number;
-  industry_id?: number;
-  company_size_id?: number;
-  department_id?: number;
-  theme_id?: number;
-  search_mode?:number;
-  job_name?: string;
-  caseTitle?: string;
-  caseCompanySummary?:string;
-  caseChallenge?:string;
-};
+  search_id?: number
+  search_id_sub?: number
+  actionType?: number
+  document_id?: number
+  industry_id?: number
+  company_size_id?: number
+  department_id?: number
+  theme_id?: number
+  search_mode?: number
+  job_name?: string
+  caseTitle?: string
+  caseCompanySummary?: string
+  caseChallenge?: string
+}
 
 // Context の型
 type CommonContextType = {
-  common: Common | null;
-  setCommon: Dispatch<SetStateAction<Common | null>>;
-};
+  common: Common | null
+  setCommon: Dispatch<SetStateAction<Common | null>>
+}
 
 // Context作成
-const CommonContext = createContext<CommonContextType | undefined>(undefined);
+const CommonContext = createContext<CommonContextType | undefined>(undefined)
 
 // Provider コンポーネント
 export const CommonProvider = ({ children }: { children: ReactNode }) => {
@@ -60,20 +60,16 @@ export const CommonProvider = ({ children }: { children: ReactNode }) => {
     caseTitle: "",
     caseCompanySummary: "",
     caseChallenge: "",
-  });
+  })
 
-  return (
-    <CommonContext.Provider value={{ common, setCommon }}>
-      {children}
-    </CommonContext.Provider>
-  );
-};
+  return <CommonContext.Provider value={{ common, setCommon }}>{children}</CommonContext.Provider>
+}
 
 // Hook
 export const useCommon = () => {
-  const context = useContext(CommonContext);
+  const context = useContext(CommonContext)
   if (!context) {
-    throw new Error("useCommon must be used within a CommonProvider");
+    throw new Error("useCommon must be used within a CommonProvider")
   }
-  return context;
-};
+  return context
+}
