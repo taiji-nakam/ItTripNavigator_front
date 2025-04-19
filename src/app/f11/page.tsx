@@ -161,7 +161,7 @@ const F11Page: React.FC = () => {
           {/* プロンプト表示（参考キーワード） */}
           {prompt && (
             <div className="p-3 border-l-4 text-gray-700 text-xs rounded">
-              <p className="mb-1 font-semibold">参考キーワード（類似事例の特徴）</p>
+              <p className="mb-1 font-semibold">参考キーワード（ 類似事例の特徴 ）</p>
               <pre className="whitespace-pre-wrap">{prompt}</pre>
             </div>
           )}

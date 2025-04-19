@@ -29,6 +29,7 @@ export type Common = {
   timing?:string;
   domain?:string;
   free_word?:string;
+  
 };
 
 // Context の型
