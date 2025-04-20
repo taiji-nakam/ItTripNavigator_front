@@ -68,7 +68,7 @@ export default function F4Page() {
       </div>
       <div className="case-detail-content">
         <div className="detail-section">
-          <h2 className="section-title">タイトル/企業概要</h2>
+          <h2 className="section-title">企業概要(タイトル)</h2>
           <p className="section-text">
             {caseDetail.case_name} / {caseDetail.company_summary}
           </p>
@@ -78,15 +78,15 @@ export default function F4Page() {
           <p className="section-text">{caseDetail.case_summary}</p>
         </div>
         <div className="detail-section">
-          <h2 className="section-title">取り組み概要</h2>
+          <h2 className="section-title">取組背景・課題</h2>
           <p className="section-text">{caseDetail.initiative_summary}</p>
         </div>
         <div className="detail-section">
-          <h2 className="section-title">抱えている課題 / 背景</h2>
+          <h2 className="section-title">取組詳細</h2>
           <p className="section-text">{caseDetail.issue_background}</p>
         </div>
         <div className="detail-section">
-          <h2 className="section-title">解決方法</h2>
+          <h2 className="section-title">取組成果</h2>
           <p className="section-text">{caseDetail.solution_method}</p>
         </div>
       </div>
@@ -99,7 +99,7 @@ export default function F4Page() {
             router.push("/f8")
           }}
         >
-          <span className="link-text">DX要件整理シート</span>
+          <span className="link-text">事例の戦略を整理</span>
         </button>
 
         {/* この課題が解決できる人材を見てみる：/f6 へ遷移 */}
@@ -116,7 +116,7 @@ export default function F4Page() {
             router.push("/f6")
           }}
         >
-          <span className="link-text">この課題が解決できる人材</span>
+          <span className="link-text">事例が解決できる人材</span>
         </button>
 
         {/* エージェントに人材の相談をする：actionType 1 に設定し、/f8 へ遷移 */}
@@ -127,7 +127,7 @@ export default function F4Page() {
             router.push("/f8")
           }}
         >
-          <span className="link-text">エージェントに人材の相談</span>
+          <span className="link-text">エージェントに相談</span>
         </button>
       </div>
       <style jsx>{`

@@ -225,7 +225,7 @@ export default function F8Page() {
             disabled={common?.actionType === 1}
             onClick={handleStrategy}
           >
-            <span className="link-text">戦略文章出力</span>
+            <span className="link-text">DX戦略文章出力</span>
           </button>
           {/* エージェントに相談ボタン: common.actionType が 2 の場合は無効 */}
           <button 
@@ -234,7 +234,7 @@ export default function F8Page() {
             disabled={common?.actionType === 2}
             onClick={handleAgentSupport}
           >
-          <span className="link-text">エージェントに人材の相談をする</span>
+          <span className="link-text">エージェントに相談</span>
           </button>
           {/*<button 
             type="button"
