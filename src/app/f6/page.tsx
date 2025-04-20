@@ -1,14 +1,12 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useCommon } from "../../../contexts/commonContext"
 
 // 追加: 既に使用された画像を追跡するための配列（ページ表示ごとにリセット）
-// 変更箇所1: 重複しない画像選択のための状態変数を追加
 const usedProfileImages: number[] = []
 
-// 変更箇所2: ランダムなプロフィール画像のパスを返す関数を修正
-// 既に使用された画像を除外して選択するように変更
+// ランダムなプロフィール画像のパスを返す関数
 function getRandomProfileImage(): string {
   // 使用可能な画像の数（1から10）
   const totalImages = 10
@@ -40,7 +38,7 @@ function getRandomProfileImage(): string {
   return `/pfimage${circledNumbers[selectedNumber - 1]}.png`
 }
 
-// 人材データの型定義（APIから取得される項目に合わせて、必要なキーのみ定義）
+// 人材データの型定義
 interface Personnel {
   id: string
   name: string
@@ -62,13 +60,26 @@ export default function F6Page() {
 
   // APIから取得した人材データの状態
   const [personnelList, setPersonnelList] = useState<Personnel[]>([])
-  // 選択された人材IDの配列
-  const [selectedPersonnel, setSelectedPersonnel] = useState<string[]>([])
 
-  // 変更箇所3: コンポーネントマウント時に使用済み画像リストをリセット
+  // 変更箇所1: 選択された人材IDを配列から単一の文字列に変更
+  const [selectedPersonnelId, setSelectedPersonnelId] = useState<string | null>(null)
+
+  // 人材IDと画像パスのマッピングを保持するステート変数
+  const [profileImageMap, setProfileImageMap] = useState<Record<string, string>>({})
+
+  // 初回レンダリングを追跡するためのref
+  const isInitialRender = useRef(true)
+
+  // コンポーネントマウント時に使用済み画像リストをリセット
   useEffect(() => {
     // ページ表示時に使用済み画像リストをリセット
     usedProfileImages.length = 0
+
+    // 初回レンダリングフラグをリセット
+    isInitialRender.current = true
+
+    // 画像マッピングをクリア
+    setProfileImageMap({})
   }, [])
 
   // ページ表示時に API を呼び出して人材データを取得する
@@ -109,6 +120,23 @@ export default function F6Page() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // 人材データが取得されたら、各人材に画像を割り当てる
+  useEffect(() => {
+    if (personnelList.length > 0 && isInitialRender.current) {
+      const newImageMap: Record<string, string> = {}
+
+      // 各人材にランダムな画像を割り当てる
+      personnelList.forEach((person) => {
+        if (person.id && !newImageMap[person.id]) {
+          newImageMap[person.id] = getRandomProfileImage()
+        }
+      })
+
+      setProfileImageMap(newImageMap)
+      isInitialRender.current = false
+    }
+  }, [personnelList])
+
   // フィルタリング：
   //  - person.id が空なら除外
   //  - person.summary が空文字 or "No" or "undefined"（大小無視）なら除外
@@ -122,23 +150,20 @@ export default function F6Page() {
     return hasId && isSummaryValid
   })
 
-  // 人材の選択/解除用の処理
-  const togglePersonnelSelection = (id: string) => {
-    if (selectedPersonnel.includes(id)) {
-      setSelectedPersonnel(selectedPersonnel.filter((pid) => pid !== id))
-    } else {
-      setSelectedPersonnel([...selectedPersonnel, id])
-    }
+  // 変更箇所2: 人材の選択処理を単一選択に変更
+  const selectPersonnel = (id: string) => {
+    // 既に選択されている場合は選択解除、そうでなければ新しく選択
+    setSelectedPersonnelId(selectedPersonnelId === id ? null : id)
   }
 
-  // エージェントに相談ボタンのクリックハンドラを async 関数に修正
+  // 変更箇所3: エージェントに相談ボタンのクリックハンドラを修正
   const handleConsultClick = async () => {
-    if (selectedPersonnel && selectedPersonnel.length > 0) {
-      console.log("選択された人材:", selectedPersonnel)
+    if (selectedPersonnelId) {
+      console.log("選択された人材:", selectedPersonnelId)
       const payload = {
         search_id: common?.search_id,
         search_id_sub: common?.search_id_sub,
-        talent_id: Number.parseInt(selectedPersonnel[0]),
+        talent_id: Number.parseInt(selectedPersonnelId),
       }
 
       try {
@@ -195,8 +220,8 @@ export default function F6Page() {
           <div className="grid grid-cols-1 gap-8">
             {filteredPersonnel.length > 0 ? (
               filteredPersonnel.map((person) => {
-                // 変更箇所4: 各人材ごとに重複しないランダム画像パスを生成
-                const randomImagePath = getRandomProfileImage()
+                // 画像パスをマッピングから取得（なければプレースホルダー）
+                const profileImagePath = profileImageMap[person.id] || "/placeholder.svg"
 
                 // マインドセット
                 const mindsetIsEmpty = !person.mindset || person.mindset.trim() === ""
@@ -213,36 +238,39 @@ export default function F6Page() {
                 const displaySupport = supportIsEmpty && person.job ? person.job : person.supportarea
                 const supportTitle = supportIsEmpty && person.job ? "保有職種" : "支援可能領域"
 
+                // 変更箇所4: 選択状態の判定を変更
+                const isSelected = selectedPersonnelId === person.id
+
                 return (
                   <div
                     key={person.id}
                     className={`border rounded-lg p-6 cursor-pointer transition-all ${
-                      selectedPersonnel.includes(person.id) ? "border-blue-500 bg-blue-50" : "border-gray-200"
+                      isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200"
                     }`}
-                    onClick={() => togglePersonnelSelection(person.id)}
+                    onClick={() => selectPersonnel(person.id)}
                   >
-                    {/* タイトル表示 */}
-                    <h2 className="text-xl font-bold mb-4 text-center">{person.name}</h2>
+                    {/* タイトルとプロフィール写真を同じ行に配置 */}
+                    <div className="flex flex-col md:flex-row items-center justify-between mb-4">
+                      <h2 className="text-xl font-bold text-center md:text-left">{person.name}</h2>
 
-                    <div className="flex flex-col md:flex-row gap-6">
-                      {/* 左側：プロフィール写真 */}
-                      <div className="md:w-1/5">
+                      {/* プロフィール写真 - タイトルと同じ行に配置 */}
+                      <div className="w-24 h-24 mt-4 md:mt-0">
                         <img
-                          src={randomImagePath || "/placeholder.svg"}
+                          src={profileImagePath || "/placeholder.svg"}
                           alt={`${person.name} のプロフィール写真`}
-                          className="w-full aspect-square object-cover rounded-lg shadow-sm"
+                          className="w-full h-full object-cover rounded-lg shadow-sm"
                           onError={(e) => {
                             // エラー時のフォールバック
                             e.currentTarget.src = "/diverse-group-city.png"
                           }}
                         />
                       </div>
+                    </div>
 
-                      {/* 右側：エグゼクティブサマリー */}
-                      <div className="md:w-4/5">
-                        <h3 className="text-blue-500 font-medium mb-2">エグゼクティブサマリー</h3>
-                        <p className="mb-4">{person.summary}</p>
-                      </div>
+                    {/* エグゼクティブサマリー - 写真の下に移動したので、ここは全幅で表示 */}
+                    <div className="mb-6">
+                      <h3 className="text-blue-500 font-medium mb-2">エグゼクティブサマリー</h3>
+                      <p className="mb-4">{person.summary}</p>
                     </div>
 
                     {/* 3列のスキル情報 */}
@@ -301,7 +329,8 @@ export default function F6Page() {
         </div>
 
         <div className="flex justify-center mt-16">
-          <button className="action-button" onClick={handleConsultClick} disabled={selectedPersonnel.length === 0}>
+          {/* 変更箇所5: ボタンの無効化条件を変更 */}
+          <button className="action-button" onClick={handleConsultClick} disabled={!selectedPersonnelId}>
             <span className="link-text">選択中の人材に関してエージェントに相談</span>
           </button>
         </div>
