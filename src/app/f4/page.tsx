@@ -78,15 +78,15 @@ export default function F4Page() {
           <p className="section-text">{caseDetail.case_summary}</p>
         </div>
         <div className="detail-section">
-          <h2 className="section-title">取組背景・課題</h2>
+          <h2 className="section-title">事例内容</h2>
           <p className="section-text">{caseDetail.initiative_summary}</p>
         </div>
         <div className="detail-section">
-          <h2 className="section-title">取組詳細</h2>
+          <h2 className="section-title">取組背景</h2>
           <p className="section-text">{caseDetail.issue_background}</p>
         </div>
         <div className="detail-section">
-          <h2 className="section-title">取組成果</h2>
+          <h2 className="section-title">解決方法</h2>
           <p className="section-text">{caseDetail.solution_method}</p>
         </div>
       </div>
