@@ -7,18 +7,14 @@ export default function F8Page() {
   const router = useRouter();
   const { common, setCommon } = useCommon();
 
-  // フォーム入力用の状態
   const [companyName, setCompanyName] = useState('');
   const [personName, setPersonName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [departmentName, setDepartmentName] = useState('');
   const [jobTitle, setJobTitle] = useState('');
-
-  // モーダル表示用状態（処理中のメッセージ）
   const [loadingMessage, setLoadingMessage] = useState("");
 
-  // バリデーション: 全項目必須。未入力があれば alert
   const validateForm = (): boolean => {
     const missing: string[] = [];
     if (!companyName.trim()) missing.push("会社名");
@@ -43,8 +39,7 @@ export default function F8Page() {
     return true;
   };
 
-  // 共通のユーザーエントリー API 呼び出し
-  const callUserEntry = async (): Promise<{search_id: number, search_id_sub: number, user_id: string} | null> => {
+  const callUserEntry = async (): Promise<{ search_id: number, search_id_sub: number, user_id: string } | null> => {
     const payload = {
       search_id: common?.search_id,
       search_id_sub: common?.search_id_sub,
@@ -64,7 +59,7 @@ export default function F8Page() {
       });
       const data = await res.json();
       if (res.status === 200) {
-        return data;  // 例: { search_id: 5, search_id_sub: 1, user_id: "4CRY300003" }
+        return data;
       } else {
         alert("UserEntry API error: " + data.message);
         return null;
@@ -76,7 +71,6 @@ export default function F8Page() {
     }
   };
 
-  // エージェントに相談ボタン用ハンドラ
   const handleAgentSupport = async () => {
     if (!validateForm()) return;
     setLoadingMessage("処理中です。しばらくお待ちください");
@@ -110,7 +104,6 @@ export default function F8Page() {
     }
   };
 
-  // 戦略文章出力ボタン用ハンドラ
   const handleStrategy = async () => {
     if (!validateForm()) return;
     setLoadingMessage("文章を作成中です。しばらくお待ちください");
@@ -133,7 +126,6 @@ export default function F8Page() {
       const data = await res.json();
       if (res.status === 200) {
         setCommon((prev) => ({ ...prev, document_id: data }));
-        // API 成功時は /f10 へ遷移
         router.push('/f10');
       } else {
         alert("Strategy API error: " + data.message);
@@ -145,11 +137,6 @@ export default function F8Page() {
       setLoadingMessage("");
     }
   };
-
-  // 「この課題が解決できる人材を見てみる」ボタン用ハンドラ
-  // const handleTalentView = () => {
-  //   router.push('/f6');
-  // };
 
   return (
     <div className="container">
@@ -163,86 +150,31 @@ export default function F8Page() {
       <h1 className="title">情報取得</h1>
       <form className="form" onSubmit={e => e.preventDefault()}>
         <div className="inputGroup">
-          <input
-            type="text"
-            value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
-            placeholder="会社名を入力"
-            className="input"
-          />
+          <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="会社名を入力" className="input" />
         </div>
         <div className="inputGroup">
-          <input
-            type="text"
-            value={personName}
-            onChange={(e) => setPersonName(e.target.value)}
-            placeholder="氏名を入力"
-            className="input"
-          />
+          <input type="text" value={personName} onChange={(e) => setPersonName(e.target.value)} placeholder="氏名を入力" className="input" />
         </div>
         <div className="inputGroup">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="メールアドレスを入力"
-            className="input"
-          />
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="メールアドレスを入力" className="input" />
         </div>
         <div className="inputGroup">
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="電話番号を入力"
-            className="input"
-          />
+          <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="電話番号を入力" className="input" />
         </div>
         <div className="inputGroup">
-          <input
-            type="text"
-            value={departmentName}
-            onChange={(e) => setDepartmentName(e.target.value)}
-            placeholder="部署を入力"
-            className="input"
-          />
+          <input type="text" value={departmentName} onChange={(e) => setDepartmentName(e.target.value)} placeholder="部署を入力" className="input" />
         </div>
         <div className="inputGroup">
-          <input
-            type="text"
-            value={jobTitle}
-            onChange={(e) => setJobTitle(e.target.value)}
-            placeholder="役職を入力"
-            className="input"
-          />
+          <input type="text" value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="役職を入力" className="input" />
         </div>
-        
+
         <div className="action-buttons">
-          {/* 戦略文章出力ボタン: common.actionType が 1 の場合は無効 */}
-          <button 
-            type="button"
-            className="action-button"
-            disabled={common?.actionType === 1}
-            onClick={handleStrategy}
-          >
+          <button type="button" className="action-button" disabled={common?.actionType === 1} onClick={handleStrategy}>
             <span className="link-text">DX戦略文章出力</span>
           </button>
-          {/* エージェントに相談ボタン: common.actionType が 2 の場合は無効 */}
-          <button 
-            type="button"
-            className="action-button"
-            disabled={common?.actionType === 2}
-            onClick={handleAgentSupport}
-          >
-          <span className="link-text">エージェントに相談</span>
+          <button type="button" className="action-button" disabled={common?.actionType === 2} onClick={handleAgentSupport}>
+            <span className="link-text">エージェントに相談</span>
           </button>
-          {/*<button 
-            type="button"
-            className="action-button"
-            onClick={handleTalentView}
-          >
-            <span className="link-text">この課題が解決できる人材を見てみる</span>
-          </button>*/}
         </div>
       </form>
 
@@ -325,6 +257,18 @@ export default function F8Page() {
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           font-size: 1.5rem;
           text-align: center;
+        }
+
+        /* ✅ 追加: レスポンシブ対応（768px以下で縦並びに） */
+        @media (max-width: 768px) {
+          .action-buttons {
+            flex-direction: column;
+            gap: 16px;
+          }
+
+          .action-button {
+            width: 100%;
+          }
         }
       `}</style>
     </div>
