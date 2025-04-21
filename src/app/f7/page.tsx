@@ -135,7 +135,7 @@ export default function F7Page() {
 
         <div className="flex justify-center mt-8">
           <button className="action-button" onClick={handleSearch} disabled={!selectedJob}>
-            <span className="link-text">選択中のプロ人材をエージェントに相談</span>
+            <span className="link-text">選択中の職種のプロ人材を見る</span>
           </button>
         </div>
       </div>
