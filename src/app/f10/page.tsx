@@ -1,100 +1,98 @@
-'use client';
-import React, { useState, useEffect } from "react";
-// import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useCommon } from "../../../contexts/commonContext";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import "github-markdown-css/github-markdown-light.css";
+"use client"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { useCommon } from "../../../contexts/commonContext"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
+import "github-markdown-css/github-markdown-light.css"
 
 export default function F10Page() {
-  const router = useRouter();
-  const { common } = useCommon();
-  const [strategyDocument, setStrategyDocument] = useState<string>("");
+  const router = useRouter()
+  const { common } = useCommon()
+  const [strategyDocument, setStrategyDocument] = useState<string>("")
 
   useEffect(() => {
     async function fetchStrategyDocument() {
-      const search_id = common?.search_id;
-      const search_id_sub = common?.search_id_sub;
-      const document_id = common?.document_id;
+      const search_id = common?.search_id
+      const search_id_sub = common?.search_id_sub
+      const document_id = common?.document_id
 
       if (!search_id || !search_id_sub || !document_id) {
-        console.log("必要なパラメータが common に不足しています");
-        return;
+        console.log("必要なパラメータが common に不足しています")
+        return
       }
 
-      const endpoint = process.env.NEXT_PUBLIC_API_ENDPOINT +
-        `/strategy?search_id=${search_id}&search_id_sub=${search_id_sub}&document_id=${document_id}`;
-      console.log("Fetching strategy document from:", endpoint);
+      const endpoint =
+        process.env.NEXT_PUBLIC_API_ENDPOINT +
+        `/strategy?search_id=${search_id}&search_id_sub=${search_id_sub}&document_id=${document_id}`
+      console.log("Fetching strategy document from:", endpoint)
       try {
         const res = await fetch(endpoint, {
           method: "GET",
-          headers: { "Content-Type": "application/json" }
-        });
-        const data = await res.json();
+          headers: { "Content-Type": "application/json" },
+        })
+        const data = await res.json()
         if (res.status === 200) {
-          setStrategyDocument(data.document);
+          setStrategyDocument(data.document)
         } else {
-          alert(data.message);
+          alert(data.message)
         }
       } catch (error: unknown) {
-        console.error("Error fetching strategy document:", error);
-        alert("戦略文書取得でエラーが発生しました: " + String(error));
+        console.error("Error fetching strategy document:", error)
+        alert("戦略文書取得でエラーが発生しました: " + String(error))
       }
     }
-    fetchStrategyDocument();
+    fetchStrategyDocument()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [])
 
   const handleOutputClick = async () => {
     if (!strategyDocument) {
-      alert("戦略文書が存在しません");
-      return;
+      alert("戦略文書が存在しません")
+      return
     }
-    
+
     // Markdown文書を .md ファイルとしてダウンロードする処理
-    const blob = new Blob([strategyDocument], { type: "text/markdown" });
-    const downloadUrl = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = downloadUrl;
-    a.download = "strategy_document.md";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(downloadUrl);
+    const blob = new Blob([strategyDocument], { type: "text/markdown" })
+    const downloadUrl = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = downloadUrl
+    a.download = "strategy_document.md"
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(downloadUrl)
 
     // 戦略文書ダウンロード完了API呼び出し用 payload を作成
-    const search_id = common?.search_id;
-    const search_id_sub = common?.search_id_sub;
-    const document_id = common?.document_id;
-    
-    const payload = { search_id, search_id_sub, document_id };
+    const search_id = common?.search_id
+    const search_id_sub = common?.search_id_sub
+    const document_id = common?.document_id
+
+    const payload = { search_id, search_id_sub, document_id }
 
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_ENDPOINT + '/strategy/dl', {
+      const res = await fetch(process.env.NEXT_PUBLIC_API_ENDPOINT + "/strategy/dl", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
+        body: JSON.stringify(payload),
+      })
+      const data = await res.json()
       if (res.status === 200) {
-        alert("ご利用ありがとうございました。\nプロジェクト成功に向けた一助になれば幸いです！");
+        alert("ご利用ありがとうございました。\nプロジェクト成功に向けた一助になれば幸いです！")
       } else {
-        alert("Strategy/dl API error: " + data.message);
+        alert("Strategy/dl API error: " + data.message)
       }
     } catch (error: unknown) {
-      console.error("Error calling strategy/dl API:", error);
-      alert("戦略文書ダウンロード API 呼び出しでエラーが発生しました: " + String(error));
+      console.error("Error calling strategy/dl API:", error)
+      alert("戦略文書ダウンロード API 呼び出しでエラーが発生しました: " + String(error))
     }
-  };
+  }
 
   return (
     <div className="container">
       <div className="header">
         <h1 className="case-detail-title">戦略文書詳細</h1>
-        <button 
-          className="back-to-list-button" 
-          onClick={() => router.push('/f3')}>
+        <button className="back-to-list-button" onClick={() => router.push("/f3")}>
           事例一覧に戻る
         </button>
       </div>
@@ -103,9 +101,7 @@ export default function F10Page() {
         <div className="white-box">
           <div className="document-content markdown-body">
             {strategyDocument ? (
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {strategyDocument}
-              </ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{strategyDocument}</ReactMarkdown>
             ) : (
               "戦略文書を読み込み中..."
             )}
@@ -114,11 +110,7 @@ export default function F10Page() {
       </div>
 
       <div className="output-button-container">
-        <button 
-          type="button"
-          className="output-button"
-          onClick={handleOutputClick}
-        >
+        <button type="button" className="output-button" onClick={handleOutputClick}>
           <span className="link-text">文章を出力</span>
         </button>
       </div>
@@ -157,16 +149,17 @@ export default function F10Page() {
           display: flex;
           justify-content: center;
           align-items: flex-start;
-          padding: 2rem;
+          padding: 1rem;
         }
         .white-box {
           background-color: white;
-          width: 80%;
-          max-height: 70vh;
-          padding: 20px;
+          width: 95%; /* 白枠の幅を80%から95%に広げました */
+          max-height: 75vh; /* 高さも少し広げました */
+          padding: 30px; /* パディングも増やして内容を見やすく */
           overflow-y: auto;
           border: 1px solid #ddd;
           border-radius: 5px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* 影を追加して視認性向上 */
         }
         .document-content {
           font-size: 16px;
@@ -195,7 +188,22 @@ export default function F10Page() {
         .link-text {
           display: block;
         }
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+          .white-box {
+            width: 100%;
+            padding: 20px;
+          }
+          .header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+          }
+          .back-to-list-button {
+            align-self: flex-start;
+          }
+        }
       `}</style>
     </div>
-  );
+  )
 }
