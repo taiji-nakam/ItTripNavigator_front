@@ -110,17 +110,14 @@ const F11Page: React.FC = () => {
         </div>
       )}
 
-      {/* タイトル部分 */}
-      <div className="mb-6">
-        <h2 className="section-title flex items-center gap-2">
-          <Search className="h-5 w-5 text-blue-600 flex-shrink-0" />
-          <span>デジタル化の検討フェーズや目的に応じたアドバイスや事例が検索できます</span>
-        </h2>
+      {/* タイトル部分 - 虫眼鏡アイコンを削除 */}
+      <div className="mb-8">
+        <h2 className="section-title">デジタル化の検討フェーズや目的に応じたアドバイスや事例が検索できます</h2>
       </div>
 
       {/* 検索条件エリア - コンパクトに上部に配置 */}
       <div className="search-area mb-8 p-4 bg-gray-50 rounded-lg">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
             <Dropdown
               label="タイミングを選択する"
@@ -139,13 +136,13 @@ const F11Page: React.FC = () => {
           </div>
         </div>
 
-        <div className="mb-4">
-          <label htmlFor="freeWord" className="font-medium block mb-1">
+        <div className="mb-8">
+          <label htmlFor="freeWord" className="font-medium block mb-2">
             より具体的な課題を入力（任意）
           </label>
           <textarea
             id="freeWord"
-            rows={2}
+            rows={6}
             value={freeWord}
             onChange={(e) => setFreeWord(e.target.value)}
             placeholder={
@@ -155,7 +152,7 @@ const F11Page: React.FC = () => {
           />
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex justify-center mt-8">
           <button className="btn flex items-center justify-center gap-2 px-8" onClick={handleSearch}>
             <Search className="h-5 w-5" />
             進め方を調べる
@@ -168,7 +165,7 @@ const F11Page: React.FC = () => {
         <div className="results-area">
           {/* アドバイス表示 */}
           {advice && (
-            <div className="p-4 bg-white rounded shadow border border-gray-200 mb-4">
+            <div className="p-4 bg-white rounded shadow border border-gray-200 mb-6">
               <h3 className="text-lg font-bold mb-2 text-gray-800">ご提案</h3>
               <p className="whitespace-pre-line text-sm text-gray-700">{advice}</p>
             </div>
@@ -176,7 +173,7 @@ const F11Page: React.FC = () => {
 
           {/* プロンプト表示（参考キーワード） */}
           {prompt && (
-            <div className="p-3 border-l-4 text-gray-700 text-xs rounded mb-4">
+            <div className="p-3 border-l-4 text-gray-700 text-xs rounded mb-6">
               <p className="mb-1 font-semibold">参考キーワード（ 類似事例の特徴 ）</p>
               <pre className="whitespace-pre-wrap">{prompt}</pre>
             </div>
@@ -185,8 +182,8 @@ const F11Page: React.FC = () => {
           {/* 事例一覧 - グリッドレイアウト */}
           {caseList.length > 0 && (
             <div>
-              <h3 className="text-lg font-bold mb-3 text-gray-800">関連事例</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <h3 className="text-lg font-bold mb-4 text-gray-800">関連事例</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {caseList.map((item, index) => (
                   <CaseCard
                     key={item.id || index}
@@ -240,4 +237,3 @@ const F11Page: React.FC = () => {
 }
 
 export default F11Page
-
