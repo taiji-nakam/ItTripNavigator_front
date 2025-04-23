@@ -45,7 +45,7 @@ const Itnavi: React.FC = () => {
                 onMouseLeave={() => setIsPhaseHover(false)}
               >
                 <img src={isPhaseHover ? "/icon-case-hover.png" : "/icon-case.png"} alt="検討フェーズアイコン" />
-                検討フェーズに合わせて探す
+                目的に合わせて探す
               </button>
             </Link>
 
