@@ -116,8 +116,8 @@ const F11Page: React.FC = () => {
       </div>
 
       {/* 検索条件エリア - コンパクトに上部に配置 */}
-      <div className="search-area mb-8 p-4 bg-gray-50 rounded-lg">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div className="search-area mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
           <div>
             <Dropdown
               label="タイミングを選択する"
