@@ -328,10 +328,15 @@ export default function F6Page() {
           </div>
         </div>
 
-        <div className="flex justify-center mt-16">
+        <div className="flex justify-center gap-6 mt-16">
           {/* 変更箇所5: ボタンの無効化条件を変更 */}
           <button className="action-button" onClick={handleConsultClick} disabled={!selectedPersonnelId}>
             <span className="link-text">選択中の人材に関してエージェントに相談</span>
+          </button>
+
+          {/* 事例詳細に戻るボタン */}
+          <button className="action-button" onClick={() => router.push("/f4")}>
+            <span className="link-text">事例詳細に戻る</span>
           </button>
         </div>
       </div>
