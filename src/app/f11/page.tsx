@@ -109,53 +109,66 @@ const F11Page: React.FC = () => {
           <div className="modal-content">{loadingMessage}</div>
         </div>
       )}
-      <h2 className="section-title flex items-center gap-2">
-        <Search className="h-6 w-6 text-blue-600" />
-        デジタル化の検討フェーズや目的に応じたアドバイスや事例が検索できます
-      </h2>
-      {/* <p className="mb-4 text-gray-600">検討フェーズや解決したい課題に応じたアドバイスや事例が検索できます</p> */}
 
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* 左側：フィルタ */}
-        <div className="flex flex-col gap-4 w-full md:w-1/2">
-          <Dropdown
-            label="タイミングを選択する"
-            selected={selectedTiming}
-            onSelect={(v: string) => setSelectedTiming(v)}
-            items={timingOptions}
-          />
-          <Dropdown
-            label="解決したい領域を選択する"
-            selected={selectedDomain}
-            onSelect={(v: string) => setSelectedDomain(v)}
-            items={domainOptions}
-          />
-          <div className="flex flex-col">
-            <label htmlFor="freeWord" className="font-medium">
-              より具体的な課題を入力（任意）
-            </label>
-            <textarea
-              id="freeWord"
-              rows={4}
-              value={freeWord}
-              onChange={(e) => setFreeWord(e.target.value)}
-              placeholder={
-                "例：顧客データを活用するよう求められている\n受発注がFAX中心。自動化を検討したい\n社内のコミュニケーションが分断されていて、ツール導入を考えている"
-              }
-              className="mt-1 border rounded p-2"
+      {/* タイトル部分 */}
+      <div className="mb-6">
+        <h2 className="section-title flex items-center gap-2">
+          <Search className="h-5 w-5 text-blue-600 flex-shrink-0" />
+          <span>デジタル化の検討フェーズや目的に応じたアドバイスや事例が検索できます</span>
+        </h2>
+      </div>
+
+      {/* 検索条件エリア - コンパクトに上部に配置 */}
+      <div className="search-area mb-8 p-4 bg-gray-50 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div>
+            <Dropdown
+              label="タイミングを選択する"
+              selected={selectedTiming}
+              onSelect={(v: string) => setSelectedTiming(v)}
+              items={timingOptions}
             />
           </div>
-          <button className="btn mt-4 flex items-center justify-center gap-2" onClick={handleSearch}>
+          <div>
+            <Dropdown
+              label="解決したい領域を選択する"
+              selected={selectedDomain}
+              onSelect={(v: string) => setSelectedDomain(v)}
+              items={domainOptions}
+            />
+          </div>
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="freeWord" className="font-medium block mb-1">
+            より具体的な課題を入力（任意）
+          </label>
+          <textarea
+            id="freeWord"
+            rows={2}
+            value={freeWord}
+            onChange={(e) => setFreeWord(e.target.value)}
+            placeholder={
+              "例：顧客データを活用するよう求められている / 受発注がFAX中心。自動化を検討したい / 社内のコミュニケーションが分断されていて、ツール導入を考えている"
+            }
+            className="w-full border rounded p-2"
+          />
+        </div>
+
+        <div className="flex justify-center">
+          <button className="btn flex items-center justify-center gap-2 px-8" onClick={handleSearch}>
             <Search className="h-5 w-5" />
             進め方を調べる
           </button>
         </div>
+      </div>
 
-        {/* 右側：アドバイス＋事例一覧 */}
-        <div className="flex flex-col gap-4 w-full md:w-1/2">
+      {/* 結果表示エリア - 全幅で表示 */}
+      {(advice || prompt || caseList.length > 0) && (
+        <div className="results-area">
           {/* アドバイス表示 */}
           {advice && (
-            <div className="p-4 bg-white rounded shadow border border-gray-200">
+            <div className="p-4 bg-white rounded shadow border border-gray-200 mb-4">
               <h3 className="text-lg font-bold mb-2 text-gray-800">ご提案</h3>
               <p className="whitespace-pre-line text-sm text-gray-700">{advice}</p>
             </div>
@@ -163,33 +176,43 @@ const F11Page: React.FC = () => {
 
           {/* プロンプト表示（参考キーワード） */}
           {prompt && (
-            <div className="p-3 border-l-4 text-gray-700 text-xs rounded">
+            <div className="p-3 border-l-4 text-gray-700 text-xs rounded mb-4">
               <p className="mb-1 font-semibold">参考キーワード（ 類似事例の特徴 ）</p>
               <pre className="whitespace-pre-wrap">{prompt}</pre>
             </div>
           )}
 
-          {/* 事例一覧 */}
-          {caseList.length > 0 ? (
-            caseList.map((item, index) => (
-              <CaseCard
-                key={item.id || index}
-                title={item.title || "（タイトル未設定）"}
-                description={item.summary}
-                onClick={() => handleDetail(Number(item.id))}
-              />
-            ))
-          ) : (
-            <p className="text-sm text-gray-500"></p>
+          {/* 事例一覧 - グリッドレイアウト */}
+          {caseList.length > 0 && (
+            <div>
+              <h3 className="text-lg font-bold mb-3 text-gray-800">関連事例</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {caseList.map((item, index) => (
+                  <CaseCard
+                    key={item.id || index}
+                    title={item.title || "（タイトル未設定）"}
+                    description={item.summary}
+                    onClick={() => handleDetail(Number(item.id))}
+                  />
+                ))}
+              </div>
+            </div>
           )}
         </div>
-      </div>
+      )}
 
       <style jsx>{`
         .section-container {
           padding: 2rem;
           max-width: 1200px;
           margin: 0 auto;
+        }
+        .section-title {
+          font-size: 1.2rem;
+          font-weight: 600;
+          color: #333;
+          margin-bottom: 0.5rem;
+          line-height: 1.4;
         }
         .modal-overlay {
           position: fixed;
@@ -211,16 +234,10 @@ const F11Page: React.FC = () => {
           font-size: 1.5rem;
           text-align: center;
         }
-        .section-title {
-          font-size: 1.5rem;
-          font-weight: 600;
-          color: #333;
-          margin-bottom: 1.5rem;
-          line-height: 1.4;
-        }
       `}</style>
     </section>
   )
 }
 
 export default F11Page
+
